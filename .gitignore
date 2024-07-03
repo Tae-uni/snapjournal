@@ -1,0 +1,19 @@
+# Node.js dependencies
+/node_modules
+
+# Environment variables
+.env
+.env.local
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+
+# Backend specific
+/backend/public/uploads
+
+# Next.js build output
+/.next
+/out
