@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import Link from "next/link";
 import axios from "axios";
@@ -32,17 +32,31 @@ export function SignUpForm() {
     setPasswordMismatch(false);
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/auth/local/register`, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/register`, {
         username, email, password,
       });
 
       if (response.data.user) {
-        await signIn('credentials', { email, password, callbackUrl: '/' });
-        router.push('/');
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (result?.ok) {
+          router.push('/');
+        } else {
+          setError('Failed to sign in after registration');
+        }
       }
     } catch (error) {
-      setError('Failed to sign up');
-      console.error('Sign up error:', error);
+      if (axios.isAxiosError(error)) {
+        setError(`Failed to sign up: ${error.response?.data.message}`);
+        console.error('Sign up error:', error.response?.data);
+      } else {
+        setError('Failed to sign up');
+        console.error('Sign up error:', error);
+      }
     }
   };
 
@@ -76,7 +90,7 @@ export function SignUpForm() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Sign Up</Button>
+              <Button type="submit" className="w-full">Sign Up</Button>
             </CardFooter>
           </Card>
           <div className="mt-4 text-center text-sm">

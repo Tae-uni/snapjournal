@@ -1,19 +1,19 @@
-import NextAuth, { AuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
+import NextAuth, { AuthOptions, NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { NextRequest, NextResponse } from 'next/server';
 
-const authOptions: AuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'text' },
+        email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         try {
-          const res = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/auth/local`, {
+          const res = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`, {
             identifier: credentials?.email,
             password: credentials?.password,
           });
@@ -42,7 +42,7 @@ const authOptions: AuthOptions = {
     signIn: '/auth/signin',
     signOut: '/auth/signout',
     error: '/auth/error',
-    verifyRequest: '/auth/verify-request',
+    verifyRequest: '/api/auth/verify-request',
     newUser: undefined,
   },
   callbacks: {
