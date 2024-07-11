@@ -10,21 +10,36 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
 
-export function SignInForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('');
-  const router = useRouter()
+const initialState = {
+  identifier: '',
+  password: '',
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+export function SignInForm() {
+  const [data, setData] = useState(initialState);
+  const [loading, setLoading] = useState(false);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setData({
+      ...data,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+
     setError('')
 
     try {
-      "use server"
       const result = await signIn('credentials', {
         redirect: false,
-        email,
+        identifier,
         password,
       })
 
@@ -41,7 +56,7 @@ export function SignInForm() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-8 bg-gray-50 rounded-lg">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} method="post">
           <Card>
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
@@ -51,12 +66,28 @@ export function SignInForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="identifier" name="identifier" type="email" placeholder="Put the email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Label htmlFor="identifier">Email</Label>
+                <Input
+                  id="identifier"
+                  name="identifier"
+                  type="email"
+                  placeholder="Put the email"
+                  value={identifier}
+                  required
+                  onChange={(e) => setIdentifier(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" name="password" type="password" placeholder="Put the password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input 
+                id="password" 
+                name="password" 
+                type="password" 
+                placeholder="Put the password" 
+                required
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">

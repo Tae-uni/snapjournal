@@ -6,7 +6,7 @@
 
 ## Work Details
 - **Progress**:
-  - {{Work 1}}
+  - CredentialsProvider: Signing in
   - {{Work 2}}
 
 ## Issues and Solutions
