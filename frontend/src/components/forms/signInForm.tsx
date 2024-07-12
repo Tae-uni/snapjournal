@@ -3,24 +3,40 @@
 import Link from "next/link"
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { z } from "zod";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
 
+type FormErrorT = {
+  identifier?: undefined | string[];
+  password?: undefined | string[];
+  strapiError?: string;
+};
+
 const initialState = {
   identifier: '',
   password: '',
 };
 
+const formSchema = z.object({
+  identifier: z.string().min(2).max(30),
+  password: z
+    .string().min(6, { message: 'Password must be at least 8 characters long.' })
+    .max(30),
+});
+
 export function SignInForm() {
   const [data, setData] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  // const [identifier, setIdentifier] = useState('');
+  // const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<FormErrorT>({});
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -34,23 +50,44 @@ export function SignInForm() {
     e.preventDefault();
     setLoading(true);
 
-    setError('')
+    const validatedFields = formSchema.safeParse(data);
 
-    try {
-      const result = await signIn('credentials', {
+    if (!validatedFields.success) {
+      setErrors(validatedFields.error.formErrors.fieldErrors);
+      setLoading(false);
+    } else {
+      // if validatedFields...
+      const signInResponse = await signIn('credentials', {
+        identifier: data.identifier,
+        password: data.password,
         redirect: false,
-        identifier,
-        password,
-      })
-
-      if (result?.error) {
-        setError(result.error)
+      });
+      if (signInResponse && !signInResponse?.ok) {
+        setErrors({
+          strapiError: signInResponse.error ? signInResponse.error : 'Something went wrong.',
+        });
+        setLoading(false);
       } else {
-        router.push('/')
+        router.push(callbackUrl);
+        router.refresh();
       }
-    } catch (error) {
-      setError('Failed to sign in')
     }
+
+    // try {
+    //   const result = await signIn('credentials', {
+    //     redirect: false,
+    //     identifier,
+    //     password,
+    //   })
+
+    //   if (result?.error) {
+    //     setError(result.error)
+    //   } else {
+    //     router.push('/')
+    //   }
+    // } catch (error) {
+    //   setError('Failed to sign in')
+    // }
   }
 
   return (
@@ -72,27 +109,49 @@ export function SignInForm() {
                   name="identifier"
                   type="email"
                   placeholder="Put the email"
-                  value={identifier}
+                  value={data.identifier}
                   required
-                  onChange={(e) => setIdentifier(e.target.value)}
+                  onChange={handleChange}
                 />
+                {errors?.identifier ? (
+                  <div>
+                    {errors.identifier[0]}
+                  </div>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                id="password" 
-                name="password" 
-                type="password" 
-                placeholder="Put the password" 
-                required
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Put the password"
+                  required
+                  value={data.password}
+                  onChange={handleChange}
                 />
+                {errors?.password ? (
+                  <div>
+                    {errors.password[0]}
+                  </div>
+                ) : null}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
-              <Button className="w-full">Sign In</Button>
+              <Button 
+                type="submit"
+                className="w-full"
+                disabled={loading}
+                aria-disabled={loading}
+              >
+                Sign In
+              </Button>
             </CardFooter>
+            {errors.password || errors.identifier ? (
+              <div>
+                Something went wrong. Please check your data.
+              </div>
+            ) : null}
           </Card>
           <div className="mt-4 text-center text-sm">
             Don't have an account?
