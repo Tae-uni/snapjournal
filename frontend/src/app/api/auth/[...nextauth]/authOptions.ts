@@ -43,23 +43,12 @@ export const authOptions: NextAuthOptions = {
           return {
             name: data.user.username,
             email: data.user.email,
-            id: data.user.id.toString(),
+            id: data.user.id.toString(), // Originally, the user id is 'number'
             strapiUserId: data.user.id,
             blocked: data.user.blocked,
             strapiToken: data.jwt,
           };
 
-
-          //   const user = res.data.user;
-          //   if (user) {
-          //     return { id: user.id, email: user.email, jwt: res.data.jwt };
-          //   } else {
-          //     return null;
-          //   }
-          // } catch (error) {
-          //   console.error('Error during sign-in:', error);
-          //   return null;
-          // }
         } catch (error) {
           throw error;
         }
@@ -110,19 +99,6 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    // async jwt({ token, user }: { token: any, user: any }) {
-    //   if (user) {
-    //     token.jwt = user.jwt;
-    //     token.id = user.id;
-    //     token.email = user.email;
-    //   }
-    //   return token;
-    // },
-    // async session({ session, token }: { session: any, token: any }) {
-    //   session.user = { id: token.id, email: token.email };
-    //   session.jwt = token.jwt;
-    //   return session;
-    // }
   },
   session: {
     strategy: 'jwt',

@@ -25,15 +25,13 @@ const initialState = {
 const formSchema = z.object({
   identifier: z.string().min(2).max(30),
   password: z
-    .string().min(6, { message: 'Password must be at least 8 characters long.' })
+    .string().min(6, { message: 'at least 8 characters long.' })
     .max(30),
 });
 
 export function SignInForm() {
   const [data, setData] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  // const [identifier, setIdentifier] = useState('');
-  // const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<FormErrorT>({});
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -60,41 +58,26 @@ export function SignInForm() {
       const signInResponse = await signIn('credentials', {
         identifier: data.identifier,
         password: data.password,
-        redirect: false,
+        redirect: false,  // Prevent to redirecting to /auth/error
       });
       if (signInResponse && !signInResponse?.ok) {
         setErrors({
-          strapiError: signInResponse.error ? signInResponse.error : 'Something went wrong.',
+          strapiError: 'Invalid ID or Password',
         });
         setLoading(false);
       } else {
+        // handle success
         router.push(callbackUrl);
         router.refresh();
       }
     }
-
-    // try {
-    //   const result = await signIn('credentials', {
-    //     redirect: false,
-    //     identifier,
-    //     password,
-    //   })
-
-    //   if (result?.error) {
-    //     setError(result.error)
-    //   } else {
-    //     router.push('/')
-    //   }
-    // } catch (error) {
-    //   setError('Failed to sign in')
-    // }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 bg-gray-50 rounded-lg">
+      <div className="w-full max-w-md p-8">
         <form onSubmit={handleSubmit} method="post">
-          <Card>
+          <Card className="min-h-[450px]">
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">Sign In</CardTitle>
               <CardDescription className="space-y-4">
@@ -105,6 +88,7 @@ export function SignInForm() {
               <div className="space-y-2">
                 <Label htmlFor="identifier">Email</Label>
                 <Input
+                  className="m"
                   id="identifier"
                   name="identifier"
                   type="email"
@@ -113,11 +97,11 @@ export function SignInForm() {
                   required
                   onChange={handleChange}
                 />
-                {errors?.identifier ? (
-                  <div>
+                {errors?.identifier && (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
                     {errors.identifier[0]}
                   </div>
-                ) : null}
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -130,15 +114,15 @@ export function SignInForm() {
                   value={data.password}
                   onChange={handleChange}
                 />
-                {errors?.password ? (
-                  <div>
+                {errors?.password && (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
                     {errors.password[0]}
                   </div>
-                ) : null}
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
-              <Button 
+              <Button
                 type="submit"
                 className="w-full"
                 disabled={loading}
@@ -146,12 +130,17 @@ export function SignInForm() {
               >
                 Sign In
               </Button>
+              {errors.password || errors.identifier ? (
+                <p className="mt-4 text-center text-red-500 text-sm">
+                  Please check your data.
+                </p>
+              ) : null}
+              {errors.strapiError ? (
+                <p className="mt-4 text-center text-red-500 text-sm">
+                  {errors.strapiError}
+                </p>
+              ) : null}
             </CardFooter>
-            {errors.password || errors.identifier ? (
-              <div>
-                Something went wrong. Please check your data.
-              </div>
-            ) : null}
           </Card>
           <div className="mt-4 text-center text-sm">
             Don't have an account?
