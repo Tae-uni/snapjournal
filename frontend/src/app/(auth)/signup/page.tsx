@@ -52,8 +52,8 @@
 
 // export default SignUpPage;
 
-import { SignUpForm } from "@/components/forms/signUpForm";
+import SignUp from "@/components/auth/signUp/signUp";
 
 export default function SignUpPage() {
-  return <SignUpForm />
+  return <SignUp />
 }

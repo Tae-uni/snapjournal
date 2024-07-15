@@ -10,6 +10,33 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useFormState, useFormStatus } from "react-dom";
+import signUpAction from "./signUpAction";
+
+// We need to think every return value of the server action(initialState)
+// In this project(signUpAction): only returns when there's an error such as Strapi or catch error. In case of success, it won't return but redirect.
+
+type InputErrorsT = {
+  username?: string[];
+  email?: string[];
+  password?: string[];
+};
+
+type SignUpFormInitialStateT = {
+  error: false;
+};
+
+type SignUpFormErrorStateT = {
+  error: true;
+  message: string;
+  inputErrors?: InputErrorsT;
+};
+
+export type SignUpFormStateT = SignUpFormInitialStateT | SignUpFormErrorStateT;
+
+const initialState: SignUpFormInitialStateT = {
+  error: false,
+};
 
 export function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -19,6 +46,11 @@ export function SignUpForm() {
   const [error, setError] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const router = useRouter();
+
+  const [state, formAction] = useFormState<SignUpFormStateT, FormData>(
+    signUpAction,
+    initialState,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,10 +92,12 @@ export function SignUpForm() {
     }
   };
 
+  const { pending } = useFormStatus();
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-8 bg-gray-50 rounded-lg">
-        <form onSubmit={handleSubmit}>
+        <form action={formAction}>
           <Card>
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
@@ -74,15 +108,46 @@ export function SignUpForm() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input type="text" id="username" name="username" placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <Input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="username"
+                  required
+                />
+                {state.error && state?.inputErrors?.username ? (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
+                    {state.inputErrors.username[0]}
+                  </div>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input type="email" id="email" name="email" placeholder="example@test.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="example@test.com"
+                />
+                {state.error && state?.inputErrors?.email ? (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
+                    {state.inputErrors.email[0]}
+                  </div>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input type="password" id="password" name="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="password"
+                />
+                {state.error && state?.inputErrors?.password ? (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
+                    {state.inputErrors.password[0]}
+                  </div>
+                ) : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -90,7 +155,7 @@ export function SignUpForm() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full">Sign Up</Button>
+              <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>Sign Up</Button>
             </CardFooter>
           </Card>
           <div className="mt-4 text-center text-sm">
