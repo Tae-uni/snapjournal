@@ -1,8 +1,8 @@
 "use server";
 
 import axios from "axios";
-import { redirect } from "next/navigation";
 import { z } from "zod";
+import { redirect } from "next/navigation";
 import { SignUpFormStateT } from "./signUpForm";
 
 const formSchema = z.object({
@@ -12,7 +12,7 @@ const formSchema = z.object({
   email: z.string()
     .email('Enter a valid email.').trim(),
   password: z.string()
-    .min(6)
+    .min(6, { message: "Min 6 characters" })
     .regex(/[A-Za-z]/, { message: "Password must contain a letter" })
     .regex(/[0-9]/, { message: 'Password must contain a number.' })
     .max(30, { message: "Max 30 characters" }).trim(),
@@ -22,16 +22,21 @@ export default async function signUpAction(
   prevState: SignUpFormStateT,
   formData: FormData
 ) {
+  const formDataWithoutConfirmPassword = new FormData();
+  formDataWithoutConfirmPassword.append("username", formData.get("username") as string);
+  formDataWithoutConfirmPassword.append("email", formData.get("email") as string);
+  formDataWithoutConfirmPassword.append("password", formData.get("password") as string);
+
   const validatedFields = formSchema.safeParse({
-    username: formData.get('username'),
-    email: formData.get('email'),
-    password: formData.get('password'),
+    username: formDataWithoutConfirmPassword.get('username'),
+    email: formDataWithoutConfirmPassword.get('email'),
+    password: formDataWithoutConfirmPassword.get('password'),
   });
 
   if (!validatedFields.success) {
     return {
       error: true,
-      fieldErrors: validatedFields.error.flatten().fieldErrors,
+      inputErrors: validatedFields.error.flatten().fieldErrors,
       message: 'Please verify your data',
     };
   }
@@ -39,7 +44,8 @@ export default async function signUpAction(
   const { username, email, password } = validatedFields.data;
 
   try {
-    const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/register`,
+    const strapiResponse = await axios.post(
+      process.env.NEXT_PUBLIC_STRAPI_URL + `/api/auth/local/register`,
       {
         username,
         email,
@@ -59,19 +65,48 @@ export default async function signUpAction(
         message: '',
       };
 
-      // check if response in Json-able and basically, axios returns the json
+      // check if response is JSON-able
       if (strapiResponse.data && strapiResponse.data.error) {
+        const errorMessage = strapiResponse.data.error.message;
+        if (errorMessage.includes('email')) {
+          response.message = 'Email already exists.';
+        } else if (errorMessage.includes('username')) {
+          response.message = 'Username already exists.';
+        } else {
+          response.message = errorMessage;
+        }
+      } else {
         response.message = strapiResponse.statusText;
       }
       return response;
     }
-  } catch (err) {
-    const error = err as any;
-    // network error or sth
-    return {
+  } catch (error: any) {
+    // network error or something
+    const response = {
       error: true,
-      message: axios.isAxiosError(error) && error.response ? error.response.data.message : error.message,
+      message: '',
     };
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        const contentType = error.response.headers['content-type'];
+        if (contentType && contentType.includes('application/json')) {
+          if (error.response.data.error.message.includes('email')) {
+            response.message = 'Email already exists.';
+          } else if (error.response.data.error.message.includes('username')) {
+            response.message = 'Username already exists.';
+          } else {
+            response.message = error.response.data.error.message;
+          }
+        } else {
+          response.message = error.response.statusText;
+        }
+      } else {
+        response.message = error.message;
+      }
+    } else {
+      response.message = error.message;
+    }
+    return response;
   }
 
   redirect('/confirmation/message');

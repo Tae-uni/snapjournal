@@ -1,10 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import axios from "axios";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -38,65 +35,24 @@ const initialState: SignUpFormInitialStateT = {
   error: false,
 };
 
-export function SignUpForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
-  const router = useRouter();
-
+export default function SignUpForm() {
   const [state, formAction] = useFormState<SignUpFormStateT, FormData>(
     signUpAction,
     initialState,
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (password !== confirmPassword) {
-      setPasswordMismatch(true);
-      return;
-    }
-
-    setPasswordMismatch(false);
-
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/register`, {
-        username, email, password,
-      });
-
-      if (response.data.user) {
-        const result = await signIn('credentials', {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (result?.ok) {
-          router.push('/');
-        } else {
-          setError('Failed to sign in after registration');
-        }
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setError(`Failed to sign up: ${error.response?.data.message}`);
-        console.error('Sign up error:', error.response?.data);
-      } else {
-        setError('Failed to sign up');
-        console.error('Sign up error:', error);
-      }
-    }
-  };
-
   const { pending } = useFormStatus();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+  useEffect(() => {
+    setPasswordMismatch(password !== confirmPassword);
+  }, [password, confirmPassword]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 bg-gray-50 rounded-lg">
+      <div className="w-full max-w-md p-8">
         <form action={formAction}>
           <Card>
             <CardHeader className="space-y-1">
@@ -142,6 +98,8 @@ export function SignUpForm() {
                   id="password"
                   name="password"
                   placeholder="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 {state.error && state?.inputErrors?.password ? (
                   <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
@@ -149,14 +107,38 @@ export function SignUpForm() {
                   </div>
                 ) : null}
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input type="password" id="confirm-password" name="confirm-password" placeholder="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-              </div>
+                <Input
+                  type="password"
+                  id="confirm-password"
+                  name="confirm-password"
+                  placeholder="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                {passwordMismatch && confirmPassword !== "" && (
+                  <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
+                    Passwords do not match
+                  </div>
+                )}
+              </div> */}
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>Sign Up</Button>
+              <Button
+                type="submit"
+                className="w-full"
+                // disabled={pending || passwordMismatch}
+                // aria-disabled={pending || passwordMismatch}
+              >
+                Sign Up
+              </Button>
             </CardFooter>
+            {state.error && state.message ? (
+              <div className="pb-5 text-red-500 text-center text-sm min-h-[20px]" aria-live="polite">
+                {state.message}
+              </div>
+            ) : null}
           </Card>
           <div className="mt-4 text-center text-sm">
             Have an account?
@@ -164,8 +146,6 @@ export function SignUpForm() {
               Sign In
             </Link>
           </div>
-          {passwordMismatch && <p className="mt-4 text-center text-red-500">Passwords do not match</p>}
-          {error && <p className="mt-4 text-center text-red-500">{error}</p>}
         </form>
       </div>
     </div>
