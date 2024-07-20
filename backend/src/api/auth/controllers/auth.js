@@ -10,12 +10,22 @@ module.exports = {
       return ctx.badRequest('Missing username, email or password');
     }
 
-    const userWithSameEmail = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
-    if (userWithSameEmail) {
-      return ctx.badRequest('Email already taken');
+    const emailExist = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
+    const usernameExist = await strapi.query('plugin::users-permissions.user').findOne({ where: { username } });
+
+    if (emailExist && usernameExist) {
+      return ctx.badRequest('Email and Username are already taken');
     }
     
-    const user = await strapi.plugins['user-permissions'].services.user.add({
+    if (emailExist) {
+      return ctx.badRequest('Email is already taken');
+    }
+
+    if (usernameExist) {
+      return ctx.badRequest('Username is already taken');
+    }
+
+    const user = await strapi.plugins['users-permissions'].services.user.add({
       username,
       email,
       password,
