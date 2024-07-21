@@ -126,4 +126,4 @@ module.exports = {
   
 ###Reference
 - [Strapi-Document](https://docs.strapi.io/dev-docs/backend-customization/controllers)
-- [SnapJournal]()
+- [SnapJournal-commit_b1ec5c2](https://github.com/Tae-uni/snapjournal/commit/b1ec5c28ff01b342d59ecf782a565fc7d7fbdca3)
