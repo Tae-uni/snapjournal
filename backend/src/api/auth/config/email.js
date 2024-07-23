@@ -1,3 +1,4 @@
+// Handles sending emails during user authentication processes
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -14,5 +15,14 @@ const sendEmail = async (to, subject, html) => {
     to,
     subject,
     html,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email: ', error);
   }
-}
+};
+
+module.exports = sendEmail;

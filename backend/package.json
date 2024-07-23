@@ -16,6 +16,7 @@
     "@strapi/plugin-users-permissions": "4.25.2",
     "@strapi/strapi": "4.25.2",
     "better-sqlite3": "8.6.0",
+    "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
