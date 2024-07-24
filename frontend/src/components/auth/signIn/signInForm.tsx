@@ -25,7 +25,7 @@ const initialState = {
 const formSchema = z.object({
   identifier: z.string().min(2).max(30),
   password: z
-    .string().min(6, { message: 'at least 8 characters long.' })
+    .string().min(6, { message: 'at least 6 characters long.' })
     .max(30),
 });
 

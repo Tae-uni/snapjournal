@@ -115,11 +115,3 @@ export const authOptions: NextAuthOptions = {
     // newUser: undefined,
   },
 };
-
-// export const GET = async (req: NextRequest) => {
-//   return NextAuth(authOptions)(req, NextResponse.next());
-// };
-
-// export const POST = async (req: NextRequest) => {
-//   return NextAuth(authOptions)(req, NextResponse.next());
-// };
