@@ -15,6 +15,7 @@ module.exports = {
   },
 
   async verifyEmail(ctx) {
+    console.log("auth.js Active");
     const { token } = ctx.request.query;
 
     try {

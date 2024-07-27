@@ -20,7 +20,7 @@ const registerUser = async (username, email, password) => {
   });
   
   // Generate a verification token with a 1-hour expiration
-  const token = generateToken({ username, email, password }, '1h');
+  const token = generateToken({ id: user.id }, '1h');
   const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
   const emailHtml = `<p>Please verify your email by clicking the link below:</p><a href="${verificationLink}">Verify Email</a>`;
 
