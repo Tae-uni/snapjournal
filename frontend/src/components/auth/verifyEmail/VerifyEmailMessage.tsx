@@ -11,7 +11,7 @@ export default function VerifyEmailMessage() {
 
   useEffect(() => {
     if (token) {
-      axios.get(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/verify?token=${token}`)
+      axios.get(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/verify?token=${token}`)
       .then((response) => {
         console.log('Email verified successfully', response.data);
         router.push('/confirmation/success');

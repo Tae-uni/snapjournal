@@ -11,7 +11,7 @@ module.exports = {
     {
       method: "GET",
       path: "/auth/local/verify",
-      handler: "auth.verifyEmail",
+      handler: "verify.verify",
       config: {
         "policies": []
       }

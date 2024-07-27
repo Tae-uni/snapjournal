@@ -4,7 +4,7 @@ const { verifyToken } = require("../../../utils/token");
 
 module.exports = {
   async verify(ctx) {
-    // console.log('verifyEmail handler called');
+    console.log('verifyEmail handler called');
     const { token } = ctx.query;
 
     const decoded = verifyToken(token);
