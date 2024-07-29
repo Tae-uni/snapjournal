@@ -1,6 +1,6 @@
 'use strict';
 
-const { registerUser, verifyEmailToken } = require('../services/emailService');
+const { registerUser } = require('../services/emailService');
 
 module.exports = {
   async register(ctx) {
@@ -12,17 +12,5 @@ module.exports = {
     } catch (error) {
       ctx.badRequest(error.message);
     }
-  },
-
-  async verifyEmail(ctx) {
-    console.log("auth.js Active");
-    const { token } = ctx.request.query;
-
-    try {
-      const user = await verifyEmailToken(token);
-      ctx.send({ message: 'Email verification successful', user });
-    } catch (error) {
-      ctx.badRequest(error.message);
-    }
-  },
+  }
 };

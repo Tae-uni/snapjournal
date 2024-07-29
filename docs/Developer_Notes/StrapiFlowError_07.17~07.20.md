@@ -2,7 +2,7 @@
 -
 Simple Version of Strapi Flow
 
-![Strapi-flow](StrapiFlowErrorRef/Strapi-flow.png)
+![Strapi-flow](img/Strapi-flow.png)
 
 ### Custom Controller - Define the custom API Endpoint by Controller files
 -

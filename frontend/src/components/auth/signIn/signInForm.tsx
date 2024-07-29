@@ -88,7 +88,6 @@ export function SignInForm() {
               <div className="space-y-2">
                 <Label htmlFor="identifier">Email</Label>
                 <Input
-                  className="m"
                   id="identifier"
                   name="identifier"
                   type="email"

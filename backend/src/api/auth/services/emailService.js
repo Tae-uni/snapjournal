@@ -16,6 +16,7 @@ const registerUser = async (username, email, password) => {
     username,
     email,
     password,
+    provider: 'local',
     confirmed: false,
   });
   
