@@ -46,4 +46,23 @@ const verifyEmailToken = async (token) => {
   return user;
 };
 
-module.exports = { registerUser, verifyEmailToken };
+// Function to resend confirmation email
+const resendConfirmationEmail = async (email) => {
+  const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  if (user.confirmed) {
+    throw new Error('This account is already confirmed');
+  }
+
+  const token = generateToken({ id: user.id }, '1h');
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+  const emailHtml = `<p>Please verify your email by clicking the link below:</p><a href="${verificationLink}">Verify Email</a>`;
+
+  await sendEmail(email, 'Email Verification', emailHtml);
+};
+
+module.exports = { registerUser, verifyEmailToken, resendConfirmationEmail };

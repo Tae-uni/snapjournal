@@ -15,6 +15,14 @@ module.exports = {
       config: {
         "policies": []
       }
-    }
+    },
+    {
+      method: "POST",
+      path: "/auth/local/resend-confirmation",
+      handler: "verify.resend",
+      config: {
+        "policies": []
+      }
+    },
   ],
 };
