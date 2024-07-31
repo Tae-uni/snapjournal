@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -74,6 +74,9 @@ export default function SignUpForm() {
     const response = await formAction(formData) as SignUpFormErrorStateT | undefined;
     if (response && response.error && response.inputErrors) {
       setInputErrors(response.inputErrors);
+    } else {
+      const email = formData.get('email') as string;
+      localStorage.setItem('userEmail', email);
     }
   };
 
