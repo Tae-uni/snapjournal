@@ -139,6 +139,9 @@ export function SignInForm() {
                   {errors.strapiError}
                 </p>
               ) : null}
+              <Link className="underline ml-2" href="/password/requestreset">
+                Forgot password?
+              </Link>
             </CardFooter>
           </Card>
           <div className="mt-4 text-center text-sm">
