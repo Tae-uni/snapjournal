@@ -65,4 +65,36 @@ const resendConfirmationEmail = async (email) => {
   await sendEmail(email, 'Email Verification', emailHtml);
 };
 
-module.exports = { registerUser, verifyEmailToken, resendConfirmationEmail };
+// Function to request password reset
+const requestPasswordReset = async (email) => {
+  const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const token = generateToken({ id: user.id }, '1h');
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const emailHtml = `<p>To reset your password, click the link below:</p><a href="${resetLink}">Reset Password</a>`;
+
+  await sendEmail(email, 'Password Reset', emailHtml);
+};
+
+// Function to reset password using token
+const resetPassword = async (token, newPassword) => {
+  const decoded = verifyToken(token);
+  if (!decoded || typeof decoded === 'string') {
+    throw new Error('Invalid or expired token');
+  }
+
+  const { id } = decoded;
+
+  // Set the new password for the user
+  const user = await strapi.plugins['users-permissions'].services.user.edit(id, {
+    password: newPassword,
+  });
+
+  return user;
+}
+
+module.exports = { registerUser, verifyEmailToken, resendConfirmationEmail, requestPasswordReset, resetPassword };

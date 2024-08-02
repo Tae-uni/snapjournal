@@ -1,6 +1,6 @@
 'use strict';
 
-const { resendConfirmationEmail } = require("../services/emailService");
+const { resendConfirmationEmail, requestPasswordReset, resetPassword } = require("../services/emailService");
 const { verifyToken } = require("../../../utils/token");
 
 module.exports = {
@@ -39,6 +39,28 @@ module.exports = {
     } catch (error) {
       console.error('Error resending confirmation email:', error.message);
       ctx.badRequest('Error resending confirmation email');
+    }
+  },
+
+  async forgotPassword(ctx) {
+    const { email } = ctx.request.body;
+
+    try {
+      await requestPasswordReset(email);
+      ctx.send({ message: 'Password reset email sent' });
+    } catch (error) {
+      ctx.badRequest('Error sending password reset email');
+    }
+  },
+
+  async resetPassword(ctx) {
+    const { token, newPassword } = ctx.request.body;
+
+    try {
+      await resetPassword(token, newPassword);
+      ctx.send({ message: 'Password reset successfully' });
+    } catch (error) {
+      ctx.badRequest('Error resetting password');
     }
   },
 };
