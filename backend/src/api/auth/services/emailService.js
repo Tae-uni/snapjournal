@@ -74,7 +74,7 @@ const requestPasswordReset = async (email) => {
   }
 
   const token = generateToken({ id: user.id }, '1h');
-  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const resetLink = `${process.env.FRONTEND_URL}/password/reset?token=${token}`;
   const emailHtml = `<p>To reset your password, click the link below:</p><a href="${resetLink}">Reset Password</a>`;
 
   await sendEmail(email, 'Password Reset', emailHtml);
