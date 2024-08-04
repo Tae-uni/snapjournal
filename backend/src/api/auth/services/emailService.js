@@ -82,6 +82,7 @@ const requestPasswordReset = async (email) => {
 
 // Function to reset password using token
 const resetPassword = async (token, newPassword) => {
+  console.log('Token received:', token);
   const decoded = verifyToken(token);
   if (!decoded || typeof decoded === 'string') {
     throw new Error('Invalid or expired token');
@@ -93,6 +94,10 @@ const resetPassword = async (token, newPassword) => {
   const user = await strapi.plugins['users-permissions'].services.user.edit(id, {
     password: newPassword,
   });
+
+  if (!user) {
+    throw new Error('Error updating password')
+  }
 
   return user;
 }

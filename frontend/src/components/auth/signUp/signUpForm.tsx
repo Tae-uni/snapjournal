@@ -12,7 +12,7 @@ import { formSchema } from "@/components/utils/validationSchemas";
 
 import signUpAction from "./signUpAction";
 
-// In this project(signUpAction): only returns when there's an error such as Strapi or catch error. In case of success, it won't return but redirect.
+// In this project(signUpAction): In case of success, it won't return but redirect.
 
 type InputErrorsT = {
   username?: string[];

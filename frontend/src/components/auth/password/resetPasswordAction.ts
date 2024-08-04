@@ -1,8 +1,9 @@
 'use server';
 
 import { z } from "zod";
-import { ResetPasswordFormStateT } from "./ResetPassword";
 import axios from "axios";
+
+import { ResetPasswordFormStateT } from "./ResetPassword";
 
 const formSchema = z.object({
   password: z.string().min(6).max(30).trim(),
@@ -26,6 +27,10 @@ export default async function resetPasswordAction(
     };
   }
   const { password, passwordConfirmation } = validatedFields.data;
+
+  console.log('Token:', prevState.code); 
+  console.log('Password:', password);
+  console.log('Password Confirmation:', passwordConfirmation);
 
   try {
     const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/reset-password`,

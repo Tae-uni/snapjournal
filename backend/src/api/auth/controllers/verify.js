@@ -42,7 +42,8 @@ module.exports = {
     }
   },
 
-  async forgotPassword(ctx) {
+  async forgot(ctx) {
+    console.log('forgot handler called');
     const { email } = ctx.request.body;
 
     try {
@@ -53,7 +54,8 @@ module.exports = {
     }
   },
 
-  async resetPassword(ctx) {
+  async reset(ctx) {
+    console.log('reset handler called');
     const { token, newPassword } = ctx.request.body;
 
     try {

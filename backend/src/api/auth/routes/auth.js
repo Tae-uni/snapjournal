@@ -27,7 +27,7 @@ module.exports = {
     {
       method: "POST",
       path: "/auth/local/forgot-password",
-      handler: "verify.forgotPassword",
+      handler: "verify.forgot",
       config: {
         "policies": []
       }
@@ -35,7 +35,7 @@ module.exports = {
     {
       method: "POST",
       path: "/auth/local/reset-password",
-      handler: "verify.resetPassword",
+      handler: "verify.reset",
       config: {
         "policies": []
       }
