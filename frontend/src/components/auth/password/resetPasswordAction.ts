@@ -7,17 +7,18 @@ import { ResetPasswordFormStateT } from "./ResetPassword";
 
 const formSchema = z.object({
   password: z.string().min(6).max(30).trim(),
-  passwordConfirmation: z.string().min(6).max(30).trim(),
+  token: z.string(),
 });
 
 export default async function resetPasswordAction(
   prevState: ResetPasswordFormStateT,
   formData: FormData
-) {
+): Promise<ResetPasswordFormStateT> {
   const validatedFields = formSchema.safeParse({
     password: formData.get('password'),
-    passwordConfirmation: formData.get('passwordConfirmation'),
+    token: formData.get('token'),
   });
+  
   if (!validatedFields.success) {
     return {
       error: true,
@@ -26,18 +27,17 @@ export default async function resetPasswordAction(
       code: prevState.code,
     };
   }
-  const { password, passwordConfirmation } = validatedFields.data;
+  const { password, token } = validatedFields.data;
 
   console.log('Token:', prevState.code); 
   console.log('Password:', password);
-  console.log('Password Confirmation:', passwordConfirmation);
 
   try {
+    console.log('Sending request to server...');
     const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/reset-password`,
       {
         password,
-        passwordConfirmation,
-        code: prevState.code,
+        code: token,
       },
       {
         headers: {

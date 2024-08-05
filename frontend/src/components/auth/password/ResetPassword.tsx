@@ -3,22 +3,20 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { useSearchParams } from "next/navigation";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import resetPasswordAction from "./resetPasswordAction";
 
-type Props = {
-  code: string | undefined;
-};
-
 type InputErrorsT = {
   password?: string[];
-  passwordConfirmation?: string[];
+  // passwordConfirmation?: string[];
 };
 
 export type ResetPasswordFormStateT = {
@@ -28,14 +26,17 @@ export type ResetPasswordFormStateT = {
   code?: string;
 };
 
-export default function ResetPassword({ code }: Props) {
+export default function ResetPassword() {
+  const searchParams = useSearchParams();
+  const code = searchParams.get('token');
+  // console.log('Code:', code);
   const initialState: ResetPasswordFormStateT = {
     error: false,
     code: code || '',
   };
   const [state, formAction] = useFormState<ResetPasswordFormStateT, FormData>(
     resetPasswordAction,
-    initialState
+    initialState,
   );
 
   const { pending } = useFormStatus();
@@ -50,8 +51,14 @@ export default function ResetPassword({ code }: Props) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submitted');
     const formData = new FormData(e.currentTarget);
     formData.delete('confirm-password');
+
+    if (code) {
+      formData.append('token', code);
+    }
+    console.log('FormData:', Object.fromEntries(formData.entries()));
 
     const validateFields = formSchema.safeParse({
       password: formData.get('password'),
@@ -69,7 +76,7 @@ export default function ResetPassword({ code }: Props) {
     }
   };
 
-  // if (!code) return <p>Error, please use the link we mailed you.</p>
+  if (!code) return <p>Error, please use the link we mailed you.</p>
 
   if (!state.error && 'message' in state && state.message === 'Success') {
     return (
@@ -120,7 +127,7 @@ export default function ResetPassword({ code }: Props) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="passwordConfirmation">
+                <Label htmlFor="confirm-password">
                   Confirm your password *
                 </Label>
                 <Input
@@ -146,7 +153,7 @@ export default function ResetPassword({ code }: Props) {
                 disabled={pending || passwordMismatch}
                 aria-disabled={pending || passwordMismatch}
               >
-                Submit
+                Reset
               </Button>
             </CardFooter>
             {state.error && state.message ? (
@@ -156,7 +163,7 @@ export default function ResetPassword({ code }: Props) {
             ) : null}
           </Card>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
