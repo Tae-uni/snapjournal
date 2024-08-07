@@ -12,3 +12,12 @@ export const formSchema = z.object({
     .regex(/[0-9]/, { message: 'Password must contain a number.' })
     .max(30, { message: "Max 30 characters" }).trim(),
 });
+
+export const resetPasswordSchema = z.object({
+  password: z.string()
+    .min(6, { message: "Min 6 characters" })
+    .regex(/[A-Za-z]/, { message: "Password must contain a letter" })
+    .regex(/[0-9]/, { message: 'Password must contain a number.' })
+    .max(30, { message: "Max 30 characters" }).trim(),
+  token: z.string()
+});

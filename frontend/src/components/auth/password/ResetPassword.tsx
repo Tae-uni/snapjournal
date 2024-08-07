@@ -9,14 +9,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
-import { formSchema } from "@/components/utils/validationSchemas";
+import { resetPasswordSchema } from "@/components/utils/validationSchemas";
 
 import resetPasswordAction from "./resetPasswordAction";
 
 type InputErrorsT = {
   password?: string[];
-  // passwordConfirmation?: string[];
+  confirmPassword?: string[];
 };
 
 export type ResetPasswordFormStateT = {
@@ -29,17 +28,18 @@ export type ResetPasswordFormStateT = {
 export default function ResetPassword() {
   const searchParams = useSearchParams();
   const code = searchParams.get('token');
-  // console.log('Code:', code);
   const initialState: ResetPasswordFormStateT = {
     error: false,
     code: code || '',
   };
+
   const [state, formAction] = useFormState<ResetPasswordFormStateT, FormData>(
     resetPasswordAction,
     initialState,
   );
 
   const { pending } = useFormStatus();
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
@@ -51,7 +51,6 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Form submitted');
     const formData = new FormData(e.currentTarget);
     formData.delete('confirm-password');
 
@@ -60,9 +59,11 @@ export default function ResetPassword() {
     }
     console.log('FormData:', Object.fromEntries(formData.entries()));
 
-    const validateFields = formSchema.safeParse({
+    const validateFields = resetPasswordSchema.safeParse({
       password: formData.get('password'),
+      token: formData.get('token'),
     });
+    console.log('ValidateData', validateFields);
 
     if (!validateFields.success) {
       setInputErrors(validateFields.error.flatten().fieldErrors);
@@ -70,9 +71,16 @@ export default function ResetPassword() {
     }
 
     setInputErrors({});
-    const response = await formAction(formData) as ResetPasswordFormStateT | undefined;
-    if (response && response.error && response.inputErrors) {
-      setInputErrors(response.inputErrors);
+    try {
+      console.log('Calling formAction...');
+      const response = await formAction(formData) as ResetPasswordFormStateT | undefined;
+      console.log('Action response:', response);
+      if (response && response.error && response.inputErrors) {
+        setInputErrors(response.inputErrors);
+      }
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      setInputErrors({ password: ['An unexpected error occurred. Please try again.'] });
     }
   };
 
