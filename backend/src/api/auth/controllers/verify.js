@@ -58,10 +58,17 @@ module.exports = {
     console.log('reset handler called');
     const { token, newPassword } = ctx.request.body;
 
+    const decoded = verifyToken(token);
+    if (!decoded || typeof decoded === 'string') {
+      console.error('Invalid or expired token:', token);
+      return ctx.badRequest('Invalid or expired token');
+    }
+
     try {
       await resetPassword(token, newPassword);
       ctx.send({ message: 'Password reset successfully' });
     } catch (error) {
+      console.error('Error resetting password:', error.message);
       ctx.badRequest('Error resetting password');
     }
   },
