@@ -54,6 +54,21 @@ module.exports = {
     }
   },
 
+  async expire(ctx) {
+    const { token } = ctx.query;
+
+    try {
+      const decoded = verifyToken(token);
+      if (!decoded || typeof decoded === 'string') {
+        return ctx.badRequest('Invalid or expired token');
+      }
+
+      ctx.send({ message: 'Valid token' });
+    } catch (error) {
+      return ctx.badRequest('Invalid or expired token');
+    }
+  },
+
   async reset(ctx) {
     console.log('reset handler called');
     const { token, newPassword } = ctx.request.body;

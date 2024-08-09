@@ -1,6 +1,13 @@
 const { generateToken, verifyToken } = require("../../../utils/token");
-const sendEmail = require("../config/email");
 const { checkDuplicate } = require("./checkDuplicateService");
+const sendEmail = require("../config/email");
+
+// Common function to generate and send email
+const generateAndSend = async (user, subject, htmlContent, expiresIn = '1h') => {
+  const token = generateToken({ id: user.id }, expiresIn);
+  const emailHtml = htmlContent.replace("{token}", token);
+  await sendEmail(user.email, subject, emailHtml);
+};
 
 // Function to register a new user
 const registerUser = async (username, email, password) => {
@@ -21,12 +28,12 @@ const registerUser = async (username, email, password) => {
   });
   
   // Generate a verification token with a 1-hour expiration
-  const token = generateToken({ id: user.id }, '1h');
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
   const emailHtml = `<p>Please verify your email by clicking the link below:</p><a href="${verificationLink}">Verify Email</a>`;
 
-  // Send the verification email
-  await sendEmail(email, 'Email Verification', emailHtml);
+  // Use the generateAndSend function to send email with 24h expiration
+  await generateAndSend(user, 'Email Verification', emailHtml, '24h');
 };
 
 const verifyEmailToken = async (token) => {
@@ -58,11 +65,10 @@ const resendConfirmationEmail = async (email) => {
     throw new Error('This account is already confirmed');
   }
 
-  const token = generateToken({ id: user.id }, '1h');
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
   const emailHtml = `<p>Please verify your email by clicking the link below:</p><a href="${verificationLink}">Verify Email</a>`;
 
-  await sendEmail(email, 'Email Verification', emailHtml);
+  await generateAndSend(user, 'Email Verification', emailHtml, '24h');
 };
 
 // Function to request password reset
@@ -73,11 +79,10 @@ const requestPasswordReset = async (email) => {
     throw new Error('User not found');
   }
 
-  const token = generateToken({ id: user.id }, '1h');
-  const resetLink = `${process.env.FRONTEND_URL}/password/reset?token=${token}`;
+  const resetLink = `${process.env.FRONTEND_URL}/verify-token?token={token}`;
   const emailHtml = `<p>To reset your password, click the link below:</p><a href="${resetLink}">Reset Password</a>`;
 
-  await sendEmail(email, 'Password Reset', emailHtml);
+  await generateAndSend(user, 'Password Reset', emailHtml, '1h');
 };
 
 // Function to reset password using token

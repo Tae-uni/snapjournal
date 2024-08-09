@@ -33,6 +33,14 @@ module.exports = {
       }
     },
     {
+      method: "GET",
+      path: "/auth/local/expire",
+      handler: "verify.expire",
+      config: {
+        "policies": []
+      }
+    },
+    {
       method: "POST",
       path: "/auth/local/reset-password",
       handler: "verify.reset",
