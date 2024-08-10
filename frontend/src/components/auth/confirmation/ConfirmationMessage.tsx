@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 
 export default function ConfirmationMessage() {
@@ -29,7 +29,6 @@ export default function ConfirmationMessage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-
       <div className="w-full max-w-md p-8">
         <Card className="max-w-md w-full p-6">
           <Image src="/images/email.png" alt="Email" width={500} height={300} className='mb-3' />

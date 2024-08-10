@@ -16,14 +16,14 @@ export default function VerifyEmailToken() {
           if (response.data.message === 'Valid token') {
             router.push(`/password/reset?token=${token}`);
           } else {
-            router.push(`/token-expired`);
+            router.push(`/password/reset-expired`);
           }
         })
         .catch((error) => {
-          router.push(`/token-expired`);
+          router.push(`/password/reset-expired`);
         });
     } else {
-      router.push(`/token-expired`);
+      router.push(`/password/reset-expired`);
     }
   }, [token, router]);
 
