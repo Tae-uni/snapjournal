@@ -139,7 +139,7 @@ export function SignInForm() {
                   {errors.strapiError}
                 </p>
               ) : null}
-              <Link className="underline ml-2" href="/password/requestreset">
+              <Link className="underline ml-2" href="/password/request-reset">
                 Forgot password?
               </Link>
             </CardFooter>

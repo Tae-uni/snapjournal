@@ -1,34 +1,28 @@
 'use client';
 
 import { useFormState, useFormStatus } from "react-dom";
-import requestPasswordResetAction from "./requestPasswordResetAction";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-type InputErrorsT = {
-  email?: string[];
-};
+import requestPasswordResetAction from "./requestPasswordResetAction";
 
-type NoErrorFormStateT = {
-  error: false;
-  message?: string;
-};
-
-type ErrorFormStateT = {
-  error: true;
+export type RequestPasswordResetFormStateT = {
+  error: boolean;
   message: string;
-  inputErrors?: InputErrorsT;
-};
+  inputErrors?: { email?: string[] };
+}
 
-export type RequestPasswordResetFormStateT =
-  | NoErrorFormStateT
-  | ErrorFormStateT;
-
-const initialState: NoErrorFormStateT = {
+const initialState: RequestPasswordResetFormStateT = {
   error: false,
+  message: "",
 };
 
 export default function ForgotPassword() {
   const [state, formAction] = useFormState<RequestPasswordResetFormStateT, FormData>(requestPasswordResetAction, initialState);
+
   const { pending } = useFormStatus();
 
   if (!state.error && state.message === 'Success') {
@@ -43,44 +37,51 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div>
-      <h2>
-        Request a password reset
-      </h2>
-      <p>
-        Forgot your password? Enter your account email here and we will send you a link you can use to reset your password.
-      </p>
-      <form action={formAction}>
-        <div>
-          <label htmlFor="email">
-            Email *
-          </label>
-          <input
-            type="email" 
-            id="email"
-            name="email"
-            required
-          />
-          {state.error && state?.inputErrors?.email ? (
-            <div className="text-red-500" aria-live="polite">
-              {state.inputErrors.email[0]}
-            </div>
-          ) : null}
-        </div>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={pending}
-          aria-disabled={pending}
-        >
-          Submit
-        </Button>
-        {state.error && state.message ? (
-          <div className="text-red-500" aria-live="polite">
-            {state.message}
-          </div>
-        ) : null}
-      </form>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md p-8">
+        <form action={formAction}>
+          <Card className="max-x-md w-full p-6">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-3xl font-bold">
+                Forgot Password
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <CardDescription className="text-m mb-4">
+                Forgot your password? Enter your account email here and we will send you a link you can use to reset your password.
+              </CardDescription>
+              <Label htmlFor="email">
+                Email *
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email address"
+                required
+              />
+              {state.error && state?.inputErrors?.email ? (
+                <div className="text-red-500" aria-live="polite">
+                  {state.inputErrors.email[0]}
+                </div>
+              ) : null}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={pending}
+                aria-disabled={pending}
+              >
+                Send Reset Link
+              </Button>
+              {state.error && state.message ? (
+                <div className="text-red-500" aria-live="polite">
+                  {state.message}
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        </form>
+      </div>
     </div>
   )
 }

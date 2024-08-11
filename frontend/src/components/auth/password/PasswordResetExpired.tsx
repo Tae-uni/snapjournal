@@ -8,10 +8,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 
 export default function PasswordResetExpired() {
-  const [isPending, setIsPending] = useState(false);
+  const [request, setRequest] = useState(false);
+  const [signIn, setSignIn] = useState(false);
 
-  const handleButtonClick = () => {
-    setIsPending(true);
+  const handleRequestClick = () => {
+    setRequest(true);
+  };
+
+  const handleSignInClick = () => {
+    setSignIn(true);
   };
 
   return (
@@ -28,20 +33,20 @@ export default function PasswordResetExpired() {
           <CardContent className="space-y-4 text-center">
             The password reset link is no longer valid. Please request a new link to reset your password.
           </CardContent>
-          <CardFooter className="flex flex-col space-y-2 mt-2">
-            <Link href="/password/requestreset" passHref>
-              <Button onClick={handleButtonClick} className="w-full" disabled={isPending}>
-                {isPending ? "Requesting..." : "Request New Link"}
-              </Button>
-            </Link>
-            <Link href="/signin" passHref>
-              <Button className="w-full" onClick={handleButtonClick} disabled={isPending}>
-                {isPending ? "Redirecting..." : "Back to Sign In"}
-              </Button>
-            </Link>
+          <CardFooter className="flex flex-col space-y-2 mt-2 w-full">
+            <Button asChild variant="default" onClick={handleRequestClick} disabled={request} className="w-full">
+              <Link href="/password/request-reset">
+                {request ? "Loading..." : "Request New Link"}
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" onClick={handleSignInClick} disabled={signIn} className="w-full">
+              <Link href="/signin">
+                {signIn ? "Loading..." : "Back to Sign In"}
+              </Link>
+            </Button>
           </CardFooter>
         </Card>
       </div>
-    </div>
+    </div >
   );
 }
