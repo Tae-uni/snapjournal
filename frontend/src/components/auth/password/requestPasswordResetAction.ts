@@ -12,17 +12,20 @@ const formSchema = z.object({
 export default async function requestPasswordResetAction(
   prevState: RequestPasswordResetFormStateT,
   formData: FormData
-) {
+): Promise<RequestPasswordResetFormStateT> {
   const validatedFields = formSchema.safeParse({
     email: formData.get('email'),
   });
+
   if (!validatedFields.success) {
     return {
+      ...prevState,
       error: true,
       message: 'Please verify your data.',
-      fieldErrors: validatedFields.error.flatten().fieldErrors,
+      inputErrors: validatedFields.error.flatten().fieldErrors,
     };
   }
+
   const { email } =  validatedFields.data;
 
   try {
@@ -37,17 +40,20 @@ export default async function requestPasswordResetAction(
 
     if (strapiResponse.status !== 200) {
       return {
+        ...prevState,
         error: true,
         message: strapiResponse.statusText,
       };
     }
 
     return {
+      ...prevState,
       error: false,
       message: 'Success',
     };
   } catch (error: any) {
     return {
+      ...prevState,
       error: true,
       message: error.response?.data?.error?.message || error.message,
     };

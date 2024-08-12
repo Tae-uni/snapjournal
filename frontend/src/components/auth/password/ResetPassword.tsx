@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useSearchParams } from "next/navigation";
 
@@ -25,6 +25,15 @@ export type ResetPasswordFormStateT = {
   code?: string;
 };
 
+// function SubmitBtn() {
+//   const { pending } = useFormStatus();
+//   return (
+//     <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>
+//       Reset
+//     </Button>
+//   )
+// }
+
 export default function ResetPassword() {
   const searchParams = useSearchParams();
   const code = searchParams.get('token');
@@ -38,12 +47,15 @@ export default function ResetPassword() {
     initialState,
   );
 
-  const { pending } = useFormStatus();
+  // const { pending } = useFormStatus();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [inputErrors, setInputErrors] = useState<InputErrorsT>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isSubmittingRef = useRef(false);
 
   useEffect(() => {
     setPasswordMismatch(password !== confirmPassword);
@@ -51,6 +63,11 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+    console.log("isSubmitting (set to true):", isSubmitting); 
+
     const formData = new FormData(e.currentTarget);
     formData.delete('confirm-password');
 
@@ -67,6 +84,8 @@ export default function ResetPassword() {
 
     if (!validateFields.success) {
       setInputErrors(validateFields.error.flatten().fieldErrors);
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
       return;
     }
 
@@ -81,6 +100,9 @@ export default function ResetPassword() {
     } catch (error) {
       console.error('Error during form submission:', error);
       setInputErrors({ password: ['An unexpected error occurred. Please try again.'] });
+    } finally {
+      setIsSubmitting(false);
+      isSubmittingRef.current = false;
     }
   };
 
@@ -158,11 +180,12 @@ export default function ResetPassword() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={pending || passwordMismatch}
-                aria-disabled={pending || passwordMismatch}
+                disabled={isSubmitting || passwordMismatch}
+                aria-disabled={isSubmitting || passwordMismatch}
               >
                 Reset
               </Button>
+              {/* <SubmitBtn /> */}
             </CardFooter>
             {state.error && state.message ? (
               <div className="text-red-500" aria-live="polite">

@@ -20,10 +20,17 @@ const initialState: RequestPasswordResetFormStateT = {
   message: "",
 };
 
+function SubmitBtn() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>
+      Send Reset Link
+    </Button>
+  )
+}
+
 export default function ForgotPassword() {
   const [state, formAction] = useFormState<RequestPasswordResetFormStateT, FormData>(requestPasswordResetAction, initialState);
-
-  const { pending } = useFormStatus();
 
   if (!state.error && state.message === 'Success') {
     return (
@@ -48,7 +55,7 @@ export default function ForgotPassword() {
             </CardHeader>
             <CardContent className="space-y-2">
               <CardDescription className="text-m mb-4">
-                Forgot your password? Enter your account email here and we will send you a link you can use to reset your password.
+                Enter your account email here and we will send you a link to reset your password.
               </CardDescription>
               <Label htmlFor="email">
                 Email *
@@ -65,14 +72,7 @@ export default function ForgotPassword() {
                   {state.inputErrors.email[0]}
                 </div>
               ) : null}
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={pending}
-                aria-disabled={pending}
-              >
-                Send Reset Link
-              </Button>
+              <SubmitBtn />
               {state.error && state.message ? (
                 <div className="text-red-500" aria-live="polite">
                   {state.message}
