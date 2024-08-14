@@ -1,16 +1,13 @@
 'use client';
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { resetPasswordSchema } from "@/components/utils/validationSchemas";
-
 import resetPasswordAction from "./resetPasswordAction";
 
 type InputErrorsT = {
@@ -25,37 +22,20 @@ export type ResetPasswordFormStateT = {
   code?: string;
 };
 
-// function SubmitBtn() {
-//   const { pending } = useFormStatus();
-//   return (
-//     <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>
-//       Reset
-//     </Button>
-//   )
-// }
-
 export default function ResetPassword() {
   const searchParams = useSearchParams();
   const code = searchParams.get('token');
-  const initialState: ResetPasswordFormStateT = {
-    error: false,
-    code: code || '',
-  };
-
-  const [state, formAction] = useFormState<ResetPasswordFormStateT, FormData>(
-    resetPasswordAction,
-    initialState,
-  );
-
-  // const { pending } = useFormStatus();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [inputErrors, setInputErrors] = useState<InputErrorsT>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isSubmittingRef = useRef(false);
+  const [formState, setFormState] = useState<ResetPasswordFormStateT>({
+    error: false,
+    message: "",
+    code: code || "",
+  });
 
   useEffect(() => {
     setPasswordMismatch(password !== confirmPassword);
@@ -63,10 +43,7 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
     setIsSubmitting(true);
-    console.log("isSubmitting (set to true):", isSubmitting); 
 
     const formData = new FormData(e.currentTarget);
     formData.delete('confirm-password');
@@ -74,41 +51,28 @@ export default function ResetPassword() {
     if (code) {
       formData.append('token', code);
     }
-    console.log('FormData:', Object.fromEntries(formData.entries()));
 
-    const validateFields = resetPasswordSchema.safeParse({
-      password: formData.get('password'),
-      token: formData.get('token'),
-    });
-    console.log('ValidateData', validateFields);
-
-    if (!validateFields.success) {
-      setInputErrors(validateFields.error.flatten().fieldErrors);
-      setIsSubmitting(false);
-      isSubmittingRef.current = false;
-      return;
-    }
-
-    setInputErrors({});
     try {
-      console.log('Calling formAction...');
-      const response = await formAction(formData) as ResetPasswordFormStateT | undefined;
-      console.log('Action response:', response);
-      if (response && response.error && response.inputErrors) {
-        setInputErrors(response.inputErrors);
+      const result = await resetPasswordAction(formState, formData);
+      setFormState(result);
+      if (result.error && result.inputErrors) {
+        setInputErrors(result.inputErrors);
       }
     } catch (error) {
-      console.error('Error during form submission:', error);
-      setInputErrors({ password: ['An unexpected error occurred. Please try again.'] });
+      setFormState({
+        error: true,
+        message: 'An unexpected error occurred. Please try again.',
+        inputErrors: {},
+        code: code || "",
+      });
     } finally {
       setIsSubmitting(false);
-      isSubmittingRef.current = false;
     }
   };
 
   if (!code) return <p>Error, please use the link we mailed you.</p>
 
-  if (!state.error && 'message' in state && state.message === 'Success') {
+  if (!formState.error && formState.message === 'Success') {
     return (
       <div>
         <h2>Password was reset</h2>
@@ -185,11 +149,10 @@ export default function ResetPassword() {
               >
                 Reset
               </Button>
-              {/* <SubmitBtn /> */}
             </CardFooter>
-            {state.error && state.message ? (
+            {formState.error && formState.message ? (
               <div className="text-red-500" aria-live="polite">
-                Error: {state.message}
+                Error: {formState.message}
               </div>
             ) : null}
           </Card>
