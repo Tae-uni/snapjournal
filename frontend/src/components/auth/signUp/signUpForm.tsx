@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -20,29 +19,19 @@ type InputErrorsT = {
   password?: string[];
 };
 
-type SignUpFormInitialStateT = {
-  error: false;
-};
-
-type SignUpFormErrorStateT = {
-  error: true;
+export type SignUpFormStateT = {
+  error: boolean;
   message: string;
   inputErrors?: InputErrorsT;
 };
 
-export type SignUpFormStateT = SignUpFormInitialStateT | SignUpFormErrorStateT;
-
-const initialState: SignUpFormInitialStateT = {
-  error: false,
-};
-
 export default function SignUpForm() {
-  const [state, formAction] = useFormState<SignUpFormStateT, FormData>(
-    signUpAction,
-    initialState,
-  );
+  const [formState, setFormState] = useState<SignUpFormStateT>({
+    error: false,
+    message: "",
+  });
 
-  const { pending } = useFormStatus();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
@@ -54,6 +43,8 @@ export default function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const formData = new FormData(e.currentTarget);
     // Remove confirm-password before sending to server
     formData.delete('confirm-password');
@@ -67,16 +58,30 @@ export default function SignUpForm() {
 
     if (!validateFields.success) {
       setInputErrors(validateFields.error.flatten().fieldErrors);
+      setIsSubmitting(false);
       return;
     }
 
     setInputErrors({}); // Clear previous errors
-    const response = await formAction(formData) as SignUpFormErrorStateT | undefined;
-    if (response && response.error && response.inputErrors) {
-      setInputErrors(response.inputErrors);
-    } else {
+
+    try {
+      const result = await signUpAction(formState, formData);
+      setFormState(result);
+
+      if (result.error && result.inputErrors) {
+        setInputErrors(result.inputErrors);
+      } else {
       const email = formData.get('email') as string;
       localStorage.setItem('userEmail', email);
+      }
+    } catch (error) {
+      setFormState({
+        error: true,
+        message: 'An unexpected error occurred. Please try again.',
+        inputErrors: {},
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -162,15 +167,15 @@ export default function SignUpForm() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={pending || passwordMismatch}
-                aria-disabled={pending || passwordMismatch}
+                disabled={isSubmitting || passwordMismatch}
+                aria-disabled={isSubmitting || passwordMismatch}
               >
                 Sign Up
               </Button>
             </CardFooter>
-            {state.error && state.message ? (
+            {formState.error && formState.message ? (
               <div className="pb-5 text-red-500 text-center text-sm min-h-[20px]" aria-live="polite">
-                {state.message}
+                {formState.message}
               </div>
             ) : null}
           </Card>

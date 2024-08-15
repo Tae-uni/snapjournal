@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useState } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,24 +15,25 @@ export type RequestPasswordResetFormStateT = {
   inputErrors?: { email?: string[] };
 }
 
-const initialState: RequestPasswordResetFormStateT = {
-  error: false,
-  message: "",
-};
-
-function SubmitBtn() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" className="w-full" disabled={pending} aria-disabled={pending}>
-      Send Reset Link
-    </Button>
-  )
-}
-
 export default function ForgotPassword() {
-  const [state, formAction] = useFormState<RequestPasswordResetFormStateT, FormData>(requestPasswordResetAction, initialState);
 
-  if (!state.error && state.message === 'Success') {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formState, setFormState] = useState<RequestPasswordResetFormStateT>({
+    error: false,
+    message: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const result = await requestPasswordResetAction(formState, formData);
+    setFormState(result);
+    setIsSubmitting(false);
+  };
+
+  if (!formState.error && formState.message === 'Success') {
     return (
       <div>
         <h2>Check your email</h2>
@@ -46,7 +47,7 @@ export default function ForgotPassword() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-8">
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           <Card className="max-x-md w-full p-6">
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">
@@ -67,15 +68,22 @@ export default function ForgotPassword() {
                 placeholder="Enter your email address"
                 required
               />
-              {state.error && state?.inputErrors?.email ? (
+              {formState.error && formState?.inputErrors?.email ? (
                 <div className="text-red-500" aria-live="polite">
-                  {state.inputErrors.email[0]}
+                  {formState.inputErrors.email[0]}
                 </div>
               ) : null}
-              <SubmitBtn />
-              {state.error && state.message ? (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting}
+                aria-disabled={isSubmitting}
+              >
+                Send Reset Link
+              </Button>
+              {formState.error && formState.message ? (
                 <div className="text-red-500" aria-live="polite">
-                  {state.message}
+                  {formState.message}
                 </div>
               ) : null}
             </CardContent>

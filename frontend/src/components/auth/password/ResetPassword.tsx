@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { resetPasswordSchema } from "@/components/utils/validationSchemas";
+
 import resetPasswordAction from "./resetPasswordAction";
 
 type InputErrorsT = {
@@ -52,6 +54,18 @@ export default function ResetPassword() {
       formData.append('token', code);
     }
 
+    const validateFields = resetPasswordSchema.safeParse({
+      password: formData.get('password'),
+      token: formData.get('token'),
+    });
+
+    if (!validateFields.success) {
+      setInputErrors(validateFields.error.flatten().fieldErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
+    setInputErrors({});
     try {
       const result = await resetPasswordAction(formState, formData);
       setFormState(result);

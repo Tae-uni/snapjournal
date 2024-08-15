@@ -1,8 +1,8 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-
 import SignUpForm from "./signUpForm";
+
 
 export default async function SignUp() {
   const session = await getServerSession(authOptions);

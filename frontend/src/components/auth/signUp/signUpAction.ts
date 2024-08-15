@@ -3,8 +3,9 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { redirect } from "next/navigation";
 
-import { SignUpFormStateT } from "./signUpForm";
 import { formSchema } from "@/components/utils/validationSchemas";
+
+import { SignUpFormStateT } from "./SignUpForm";
 
 export default async function signUpAction(
   prevState: SignUpFormStateT,
