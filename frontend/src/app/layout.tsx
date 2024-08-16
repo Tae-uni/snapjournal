@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const DynamicNavbar = dynamic(() => import('@/components/layout/Navbar'), { 
+  ssr: false 
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -11,12 +16,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <DynamicNavbar />
+        {children}
+      </body>
     </html>
   );
 }
