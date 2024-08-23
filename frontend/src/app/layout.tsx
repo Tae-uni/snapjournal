@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+
+import { Navbar } from "@/components/layout/Navbar";
+
 import "./globals.css";
-import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const DynamicNavbar = dynamic(() => import('@/components/layout/Navbar'), { 
-  ssr: false 
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <DynamicNavbar />
+        <Navbar />
         {children}
       </body>
     </html>
