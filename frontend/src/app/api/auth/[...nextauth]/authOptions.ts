@@ -1,12 +1,17 @@
 import axios from 'axios';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 import { StrapiErrorT } from '@/types/strapi/StrapiError';
 import { StrapiLoginResponseT } from '@/types/strapi/User';
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+    }),
     CredentialsProvider({
       name: 'email and password',
       credentials: {
@@ -63,43 +68,73 @@ export const authOptions: NextAuthOptions = {
         profile && 'email_verified' in profile
       ) {
         if (!profile.email_verified) return false;
-      }
+
+    }
       return true;
-    },
+  },
 
-    async jwt({ token, trigger, account, user, session }) {
-      console.log('jwt callback', {
-        token,
-        trigger,
-        account,
-        user,
-        session,
-      });
+  async jwt({ token, trigger, account, user, session }) {
+    console.log('jwt callback', {
+      token,
+      trigger,
+      account,
+      user,
+      session,
+    });
 
-      if (account) {
-        if (account.provider === 'credentials') {
-          token.strapiToken = user.strapiToken;
-          token.strapiUserId = user.strapiUserId;
-          token.provider = account.provider;
-          token.blocked = user.blocked;
+    if (account) {
+      if (account.provider === 'google') {
+        try {
+          const strapiResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/${account.provider}/callback`,
+            {
+              params: {
+                access_token: account.access_token,
+              },
+              headers: {
+                'Content-Type': 'no-cache',
+              }
+            }
+          );
+          if (strapiResponse.status !== 200) {
+            const strapiError: StrapiErrorT = strapiResponse.data;
+            throw new Error(strapiError.error.message);
+          }
+
+          const strapiLoginResponse: StrapiLoginResponseT = strapiResponse.data;
+            token.strapiToken = strapiLoginResponse.jwt;
+            token.strapiUserId = strapiLoginResponse.user.id;
+            token.provider = account.provider;
+            token.blocked = strapiLoginResponse.user.blocked;
+        } catch (error) {
+          console.error('Error fetching Strapi JWT token:', error);
         }
       }
-      return token;
-    },
-    async session({ token, session }) {
-      console.log('session callback', {
-        token,
-        session,
-      });
 
-      session.strapiToken = token.strapiToken;
-      session.provider = token.provider;
-      session.user.strapiUserId = token.strapiUserId;
-      session.user.blocked = token.blocked;
 
-      return session;
-    },
+      if (account.provider === 'credentials') {
+        token.strapiToken = user.strapiToken;
+        token.strapiUserId = user.strapiUserId;
+        token.provider = account.provider;
+        token.blocked = user.blocked;
+      }
+    }
+    return token;
   },
+  async session({ token, session }) {
+    console.log('session callback', {
+      token,
+      session,
+    });
+
+    session.strapiToken = token.strapiToken;
+    session.provider = token.provider;
+    session.user.strapiUserId = token.strapiUserId;
+    session.user.blocked = token.blocked;
+
+    return session;
+  },
+},
   session: {
     strategy: 'jwt',
   },

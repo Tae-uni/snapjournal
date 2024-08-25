@@ -123,7 +123,7 @@ export function SignInForm() {
             <CardFooter className="flex flex-col">
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full mb-1"
                 disabled={loading}
                 aria-disabled={loading}
               >
@@ -139,6 +139,12 @@ export function SignInForm() {
                   {errors.strapiError}
                 </p>
               ) : null}
+              <Button
+                className="bg-white border border-zinc-300 rounded-md w-full text-zinc-700 hover:bg-gray-100"
+                onClick={() => signIn('google', { callbackUrl: callbackUrl })}
+              >
+                <span className="text-red-600 mr-2">G</span>Sign in with Google
+              </Button>
               <Link className="underline ml-2" href="/password/request-reset">
                 Forgot password?
               </Link>

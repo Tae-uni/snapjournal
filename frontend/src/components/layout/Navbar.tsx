@@ -32,7 +32,7 @@ export const Navbar = () => {
   }
 
   return (
-    <nav className="bg-gray-800 flex justify-between text-white p-4 sm:p-6 md:flex md:justify-between md:items-center">
+    <nav className="bg-gray-800 flex justify-between text-white p-4 sm:p-4 md:flex md:justify-between md:items-center">
       <div className="container justify-between mx-auto flex px-4 items-center">
         <a href="" className="text-2xl font-bold mr-16">
           SnapJournal

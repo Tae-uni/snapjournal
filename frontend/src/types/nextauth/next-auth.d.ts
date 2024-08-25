@@ -5,7 +5,7 @@ import { StrapiUserT } from "../strapi/User";
 declare module 'next-auth' {
   interface Session {
     strapiToken?: string;
-    provider?: 'credentials';
+    provider?: 'credentials' | 'google';
     user: User;
   }
 
@@ -21,6 +21,6 @@ declare module 'next-auth/jwt' {
     strapiUserId?: number;
     blocked?: boolean;
     strapiToken?: string;
-    provider?: 'credentials';
+    provider?: 'credentials' | 'google';
   }
 }

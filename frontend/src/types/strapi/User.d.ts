@@ -3,7 +3,7 @@ export type StrapiUserT = {
   username: string;
   email: string;
   blocked: boolean;
-  provider: 'local'
+  provider: 'local' | 'google';
 };
 
 export type StrapiLoginResponseT = {
