@@ -7,4 +7,11 @@ module.exports = ({ env }) => ({
   webhooks: {
     populateRelations: env.bool('WEBHOOKS_POPULATE_RELATIONS', false),
   },
+
+  // for https
+  ssl: {
+    enabled: true,
+    key: '../certificates/localhost-key.pem',
+    cert: '../certificates/localhost.pem',
+  },
 });
