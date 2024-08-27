@@ -1,0 +1,10 @@
+
+https://localhost:3000 {
+  tls internal
+	reverse_proxy localhost:3002
+}
+
+https://localhost:1337 {
+  tls internal
+	reverse_proxy localhost:8000
+}

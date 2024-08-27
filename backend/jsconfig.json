@@ -4,6 +4,7 @@
     "module": "NodeNext",
     "target": "ES2021",
     "checkJs": true,
-    "allowJs": true
+    "allowJs": true,
+    "typeRoots": ["./node_modules/@types"]
   }
 }
