@@ -36,23 +36,6 @@ const registerUser = async (username, email, password) => {
   await generateAndSend(user, 'Email Verification', emailHtml, '24h');
 };
 
-const verifyEmailToken = async (token) => {
-  const decoded = verifyToken(token);
-  if (!decoded || typeof decoded === 'string') {
-    throw new Error('Invalid or expired token');
-  }
-
-  // Extract the user ID from the token
-  const { id } = decoded;
-
-  // Set the user's confirmed status to true
-  const user = await strapi.plugins['users-permissions'].services.user.edit(id, {
-    confirmed: true,
-  });
-
-  return user;
-};
-
 // Function to resend confirmation email
 const resendConfirmationEmail = async (email) => {
   const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
@@ -107,4 +90,4 @@ const resetPassword = async (token, newPassword) => {
   return user;
 }
 
-module.exports = { registerUser, verifyEmailToken, resendConfirmationEmail, requestPasswordReset, resetPassword };
+module.exports = { registerUser, resendConfirmationEmail, requestPasswordReset, resetPassword };

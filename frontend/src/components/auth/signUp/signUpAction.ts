@@ -1,6 +1,6 @@
 "use server";
 
-import axios, { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { redirect } from "next/navigation";
 
 import axiosInstance from "@/lib/axiosInstance";

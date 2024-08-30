@@ -1,9 +1,10 @@
 'use server';
 
-import axios from 'axios';
 import { z } from 'zod';
 
 import { RequestPasswordResetFormStateT } from './RequestPasswordReset';
+
+import axiosInstance from '@/lib/axiosInstance';
 
 const formSchema = z.object({
   email: z.string().email('Enter a valid email.').trim(),
@@ -29,7 +30,7 @@ export default async function requestPasswordResetAction(
   const { email } =  validatedFields.data;
 
   try {
-    const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/forgot-password`,
+    const strapiResponse = await axiosInstance.post(`/api/auth/local/forgot-password`,
       { email },
       {
         headers: {

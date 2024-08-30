@@ -1,9 +1,9 @@
 "use server";
 
-import axios from "axios";
-
 import { ResetPasswordFormStateT } from "./ResetPassword";
 import { resetPasswordSchema } from "@/components/utils/validationSchemas";
+
+import axiosInstance from "@/lib/axiosInstance";
 
 export default async function resetPasswordAction(
   prevState: ResetPasswordFormStateT,
@@ -35,7 +35,7 @@ export default async function resetPasswordAction(
 
   try {
     console.log('Sending request to server...');
-    const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/reset-password`,
+    const strapiResponse = await axiosInstance.post(`/api/auth/local/reset-password`,
       {
         newPassword: password,
         token: token,

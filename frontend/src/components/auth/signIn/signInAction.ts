@@ -1,18 +1,38 @@
 "use server";
 
 import axiosInstance from "@/lib/axiosInstance";
-import { signIn } from "next-auth/react";
 
 export default async function signInAction(identifier: string, password: string) {
   try {
-    const response = await signIn('credentials', {
+    const response = await axiosInstance.post('/api/auth/local', {
       identifier,
       password,
-      redirect: false,  // Prevent to redirecting to /auth/error
-      axios: axiosInstance,
+      redirect: false,
     });
 
-    return response;
+    if (response.status !== 200) {
+      throw new Error(response.statusText || 'Unknown error');
+    }
+
+    const data = response.data;
+    
+    return {
+      ok: true,
+      data: {
+        name: data.user.username,
+        email: data.user.email,
+        id: data.user.id.toString(),
+        strapiUserId: data.user.id,
+        blocked: data.user.blocked,
+        strapiToken: data.jwt,
+      }
+    };
+    // ('credentials', {
+    //   identifier,
+    //   password,
+    //   redirect: false,  // Prevent to redirecting to /auth/error
+    //   axios: axiosInstance,
+    // });
   } catch (error) {
     console.error('Error during sign-in:', error);
 
