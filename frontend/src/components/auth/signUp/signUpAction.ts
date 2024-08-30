@@ -3,6 +3,8 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { redirect } from "next/navigation";
 
+import axiosInstance from "@/lib/axiosInstance";
+
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
@@ -30,8 +32,8 @@ export default async function signUpAction(
 
   try {
     // Send sign-up request to Strapi API
-    const strapiResponse = await axios.post(
-      `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/register`,
+    const strapiResponse = await axiosInstance.post(
+      `/api/auth/local/register`,
       { username, email, password },
       { headers: { 'Content-Type': 'application/json' } }
     );

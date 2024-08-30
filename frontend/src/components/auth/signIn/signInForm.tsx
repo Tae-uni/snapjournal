@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
 
+import signInAction from "./signInAction";
+
 type FormErrorT = {
   identifier?: undefined | string[];
   password?: undefined | string[];
@@ -55,11 +57,7 @@ export function SignInForm() {
       setLoading(false);
     } else {
       // if validatedFields...
-      const signInResponse = await signIn('credentials', {
-        identifier: data.identifier,
-        password: data.password,
-        redirect: false,  // Prevent to redirecting to /auth/error
-      });
+      const signInResponse = await signInAction(data.identifier, data.password);
       if (signInResponse && !signInResponse?.ok) {
         setErrors({
           strapiError: 'Invalid ID or Password',
