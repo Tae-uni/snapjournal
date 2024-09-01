@@ -1,22 +1,12 @@
 const { generateToken, verifyToken } = require("../../../utils/token");
 const { checkDuplicate } = require("./checkDuplicateService");
 const sendEmail = require("../config/email");
-const path = require("path");
 
 // Common function to generate and send email
-const generateAndSend = async (user, subject, htmlContent, expiresIn = '1h', attachments = []) => {
+const generateAndSend = async (user, subject, htmlContent, expiresIn = '1h', imageUrl, cid) => {
   const token = generateToken({ id: user.id }, expiresIn);
   const emailHtml = htmlContent.replace("{token}", token);
-  await sendEmail(user.email, subject, emailHtml, attachments);
-};
-
-// Function to image attachment
-const preImageAttachment = (filename, cid) => {
-  return {
-    filename: filename,
-    path: path.resolve(process.cwd(), 'public/uploads', filename),
-    cid: cid
-  };
+  await sendEmail(user.email, subject, emailHtml, imageUrl, cid);
 };
 
 // Function to register a new user
@@ -48,12 +38,10 @@ const registerUser = async (username, email, password) => {
   </div>
   `;
 
-  const attachments = [
-    preImageAttachment('verifyEmail.png', 'verifyEmail')
-  ];
+  const verificationImgUrl = 'https://i.imgur.com/DR3r7ye.png';
 
   // Use the generateAndSend function to send email with 24h expiration
-  await generateAndSend(user, 'Email Verification', emailHtml, '24h', attachments);
+  await generateAndSend(user, 'Email Verification', emailHtml, '24h', verificationImgUrl, 'verifyEmail');
 };
 
 // Function to resend confirmation email

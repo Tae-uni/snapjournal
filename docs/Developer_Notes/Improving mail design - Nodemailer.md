@@ -1,6 +1,6 @@
 # Improving mail design - Nodemailer
 
-The mails sending to the users are too simple. So I decided to improving design using by `CID(Content-ID)` which can embed images into an email. Also in NodeMailer, only can use simple HTML with inline CSS.  
+The emails being sent to users are too simple, so I decided to improve the design using `CID (Content-ID)` which can embed images into an email. In Nodemailer, you can only use simple HTML with inline CSS.
 
 ```js
 // config/email.js
@@ -33,5 +33,29 @@ const sendEmail = async (to, subject, html, attachments = []) => {
 .
 .
 ```
-Apparently, this codes are normally works but still can see the .png file on Gmail.  
-![verify](img/email-verify.png)
+Apparently, these codes normally work, but the .png file can still be seen as an attachment in Gmail.
+![verify](img/email-verify.png)  
+**I also tried using an image buffer and an Imgur URL, but the same problem persists.**  
+
+```js
+const sendEmail = async (to, subject, html, imageUrl = null, cid = 'defaultImageCid') => {
+  let attachments = [];
+
+  if (imageUrl) {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(response.data, 'binary');
+
+    // Add the image to attachments
+    attachments.push({
+      content: imageBuffer,
+      cid: cid,
+      contentType: 'image/png',
+    });
+  }
+```
+  
+
+
+### References
+- [Embedding Images in Nodemailer Using CID](https://www.educative.io/answers/how-to-embed-image-using-nodemailer)  
+- [Nodemailer](https://nodemailer.com/message/embedded-images/)

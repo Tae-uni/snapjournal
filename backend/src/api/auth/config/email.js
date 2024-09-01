@@ -1,5 +1,6 @@
 // Handles sending emails during user authentication processes
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -9,7 +10,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (to, subject, html, attachments = []) => {
+const sendEmail = async (to, subject, html, imageUrl = null, cid = 'defaultImageCid') => {
+  let attachments = [];
+
+  if (imageUrl) {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const imageBuffer = Buffer.from(response.data, 'binary');
+
+    // Add the image to attachments
+    attachments.push({
+      content: imageBuffer,
+      cid: cid,
+      contentType: 'image/png',
+    });
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
