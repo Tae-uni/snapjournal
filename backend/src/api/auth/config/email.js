@@ -9,12 +9,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (to, subject, html) => {
+const sendEmail = async (to, subject, html, attachments = []) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
     subject,
     html,
+    attachments: attachments.length > 0 ? attachments : undefined, // Attachments are optional.
   };
 
   try {

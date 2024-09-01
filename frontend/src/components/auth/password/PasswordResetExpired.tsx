@@ -1,23 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function PasswordResetExpired() {
-  const [request, setRequest] = useState(false);
-  const [signIn, setSignIn] = useState(false);
+  const [isButton, setIsButton] = useState(false);
+  const router = useRouter();
 
-  const handleRequestClick = () => {
-    setRequest(true);
-  };
+  useEffect(() => {
+    setIsButton(false)
+  }, []);
 
-  const handleSignInClick = () => {
-    setSignIn(true);
-  };
+  const handleClick = (path: string) => {
+    setIsButton(true);
+    router.push(path);
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -34,15 +35,11 @@ export default function PasswordResetExpired() {
             The password reset link is no longer valid. Please request a new link to reset your password.
           </CardContent>
           <CardFooter className="flex flex-col space-y-2 mt-2 w-full">
-            <Button asChild variant="default" onClick={handleRequestClick} disabled={request} className="w-full">
-              <Link href="/password/request-reset">
-                {request ? "Loading..." : "Request New Link"}
-              </Link>
+            <Button variant="default" onClick={() => handleClick('/password/request-reset')} disabled={isButton} className="w-full">
+              Request New Link
             </Button>
-            <Button asChild variant="secondary" onClick={handleSignInClick} disabled={signIn} className="w-full">
-              <Link href="/signin">
-                {signIn ? "Loading..." : "Back to Sign In"}
-              </Link>
+            <Button variant="secondary" onClick={() => handleClick('/signin')} disabled={isButton} className="w-full">
+              Back to Sign In
             </Button>
           </CardFooter>
         </Card>

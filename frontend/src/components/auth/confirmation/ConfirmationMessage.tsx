@@ -21,6 +21,7 @@ export default function ConfirmationMessage() {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/resend-confirmation`, { email });
       if (response.status === 200) {
         setEmailSent(true);
+        localStorage.removeItem('userEmail');
       }
     } catch (error) {
       console.error('Error resending email:', error);
