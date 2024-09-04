@@ -10,18 +10,10 @@ export default function ConfirmationMessage() {
   const [emailSent, setEmailSent] = useState(false);
 
   const resendEmail = async () => {
-    const email = localStorage.getItem('userEmail');
-
-    if (!email) {
-      console.error('No email found in localStorage');
-      return;
-    }
-
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/resend-confirmation`, { email });
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/resend-confirmation`);
       if (response.status === 200) {
         setEmailSent(true);
-        localStorage.removeItem('userEmail');
       }
     } catch (error) {
       console.error('Error resending email:', error);

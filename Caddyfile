@@ -6,5 +6,7 @@ https://localhost:3000 {
 
 https://localhost:1337 {
   tls internal
-	reverse_proxy localhost:8000
+	reverse_proxy localhost:8000 {
+    header_up X-Forwarded-Proto {scheme}
+  }
 }

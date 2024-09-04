@@ -4,6 +4,7 @@ const sendEmail = require("../config/email");
 
 // Common function to generate and send email
 const generateAndSend = async (user, subject, textContent, htmlContent, expiresIn = '1h') => {
+
   const token = generateToken({ id: user.id }, expiresIn);
   const textEmailContent = textContent.replace("{token}", token);
   const htmlEmailContent = htmlContent.replace("{token}", token);
@@ -12,30 +13,36 @@ const generateAndSend = async (user, subject, textContent, htmlContent, expiresI
 };
 
 // Function to register a new user
-const registerUser = async (username, email, password) => {
-  if (!username || !email || !password) {
-    throw new Error('Missing username, email or password');
-  }
+const registerUser = async (username, email, password, ctx) => {
+  try {
+    if (!username || !email || !password) {
+      throw new Error('Missing username, email or password');
+    }
 
-  // Check if username and email already exists from checkDup
-  await checkDuplicate(username, email);
+    // Check if username and email already exists from checkDup
+    await checkDuplicate(username, email);
 
-  // Add the new user to the DB with confirmed set to false
-  const user = await strapi.plugins['users-permissions'].services.user.add({
-    username,
-    email,
-    password,
-    provider: 'local',
-    confirmed: false,
-  });
+    // Add the new user to the DB with confirmed set to false
+    const user = await strapi.plugins['users-permissions'].services.user.add({
+      username,
+      email,
+      password,
+      provider: 'local',
+      confirmed: false,
+    });
 
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
+    ctx.session.email = email;
+    console.log('CTX:', ctx);
+    console.log('CTX.SESSION:', ctx.session);
+    console.log('CTX.SESSION.EMAIL:', ctx.session ? ctx.session.email : 'undefined');
 
-  const textContent = `
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
+
+    const textContent = `
     Welcome to our service! Please confirm your email by visiting the following link: ${verificationLink}
   `
 
-  const htmlContent = `
+    const htmlContent = `
   <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 10px;">
     <img src="https://i.imgur.com/DR3r7ye.png" alt="verified" style="width: 100px; margin-top: 20px;" />
     <h1 style="color: #333;">Confirm Your Email</h1>
@@ -64,12 +71,22 @@ const registerUser = async (username, email, password) => {
   </style>
   `;
 
-  // Use the generateAndSend function to send email with 24h expiration
-  await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
+    // Use the generateAndSend function to send email with 24h expiration
+    await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
+
+  } catch (error) {
+    console.error('An error occurred in registerUser:', error);
+    throw error;
+  }
 };
 
 // Function to resend confirmation email
-const resendConfirmationEmail = async (email) => {
+const resendConfirmationEmail = async (ctx) => {
+  const email = ctx.session.email;
+  if (!email) {
+    throw new Error('No email found in session');
+  }
+
   const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
 
   if (!user) {
@@ -84,6 +101,7 @@ const resendConfirmationEmail = async (email) => {
   const emailHtml = `<p>Please verify your email by clicking the link below:</p><a href="${verificationLink}">Verify Email</a>`;
 
   await generateAndSend(user, 'Email Verification', emailHtml, '24h');
+
 };
 
 // Function to request password reset
