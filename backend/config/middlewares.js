@@ -9,6 +9,7 @@ module.exports = ({ env }) => {
         enabled: true,
         origin: ['https://localhost:3000'],
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+        credential: true,
       },
     },
     'strapi::poweredBy',

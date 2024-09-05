@@ -1,22 +1,20 @@
 "use client";
 
-import axios from 'axios';
 import { useState } from 'react';
+import Image from 'next/image';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import Image from 'next/image';
+import { resendConfirmationEmail } from './confirmationMessageAction';
+
 
 export default function ConfirmationMessage() {
   const [emailSent, setEmailSent] = useState(false);
 
   const resendEmail = async () => {
-    try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/resend-confirmation`);
-      if (response.status === 200) {
-        setEmailSent(true);
-      }
-    } catch (error) {
-      console.error('Error resending email:', error);
+    const success = await resendConfirmationEmail();
+    if (success) {
+      setEmailSent(true);
     }
   };
 
