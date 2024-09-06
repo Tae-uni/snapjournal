@@ -1,7 +1,7 @@
 module.exports = ({ env }) => ({
-  host: env('HOST', '0.0.0.0'),
+  host: '127.0.0.1',
   port: env.int('PORT', 8000),
-  url: env.int('PUBLIC_URL', 'https://localhost:1337'),
+  // url: env('PUBLIC_URL', 'https://localhost:1337'),
   proxy: true,
   app: {
     keys: env.array('APP_KEYS'),

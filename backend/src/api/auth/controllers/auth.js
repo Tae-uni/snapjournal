@@ -1,6 +1,6 @@
 'use strict';
 
-const { registerUser } = require('../services/emailService');
+const { registerUser } = require('../services/email-service');
 
 module.exports = {
   async register(ctx) {

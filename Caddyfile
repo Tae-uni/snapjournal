@@ -1,12 +1,16 @@
-
+# Frontend server on localhost:3000
 https://localhost:3000 {
   tls internal
-	reverse_proxy localhost:3002
+  reverse_proxy localhost:3002
 }
 
+# Backend Strapi server on localhost:1337
 https://localhost:1337 {
   tls internal
-	reverse_proxy localhost:8000 {
+  reverse_proxy localhost:8000 {
     header_up X-Forwarded-Proto {scheme}
+    header_up Host {http.request.host}
+    header_up X-Real-IP {http.request.remote}
+    header_up X-Forwarded-For {http.request.remote}
   }
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-const { resendConfirmationEmail, requestPasswordReset, resetPassword } = require("../services/emailService");
+const { resendConfirmationEmail, requestPasswordReset, resetPassword } = require("../services/email-service");
 const { verifyToken } = require("../../../utils/token");
 
 module.exports = {
@@ -31,7 +31,11 @@ module.exports = {
   },
 
   async resend(ctx) {
-    const { email } = ctx.request.body;
+    const email = ctx.session.email;
+
+    if (!email) {
+      return ctx.badRequest('No email found in session');
+    }
 
     try {
       await resendConfirmationEmail(email);

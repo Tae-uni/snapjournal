@@ -31,21 +31,27 @@ export default async function signUpAction(
   const { username, email, password } = validatedFields.data;
 
   try {
+    console.log('Request URL:', `${axiosInstance.defaults.baseURL}/api/auth/local/registers`);
+
     // Send sign-up request to Strapi API
     const strapiResponse = await axiosInstance.post(
-      `/api/auth/local/register`,
+      `/api/auth/local/registers`,
       { username, email, password },
       { headers: { 'Content-Type': 'application/json' } }
     );
 
+    console.log('Strapi Response Status:', strapiResponse.status);
+    console.log('Strapi Response Data:', strapiResponse.data);
+    
     const result = handleStrapiResponse(strapiResponse);
     if (result) {
       return result;
     }
   } catch (error) {
+    console.error('Axios Error:', error);
     return handleAxiosError(error as AxiosError);
   }
-
+  console.log('Redirecting to /confirmation/message...');
   redirect('/confirmation/message');
 }
 

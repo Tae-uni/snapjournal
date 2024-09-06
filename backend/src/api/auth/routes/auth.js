@@ -2,7 +2,7 @@ module.exports = {
   routes: [
     {
       method: "POST",
-      path: "/auth/local/register",
+      path: "/auth/local/registers",
       handler: "auth.register",
       config: {
         "policies": []
