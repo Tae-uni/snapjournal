@@ -1,7 +1,6 @@
 "use server";
 
 import { AxiosResponse, AxiosError } from "axios";
-import { redirect } from "next/navigation";
 
 import axiosInstance from "@/lib/axiosInstance";
 
@@ -37,23 +36,27 @@ export default async function signUpAction(
     const strapiResponse = await axiosInstance.post(
       `/api/auth/local/registers`,
       { username, email, password },
-      { headers: { 'Content-Type': 'application/json' } }
+      {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true, // Important to allow cookies to be set
+      }
     );
 
     console.log('Strapi Response Status:', strapiResponse.status);
     console.log('Strapi Response Data:', strapiResponse.data);
-    
-    const result = handleStrapiResponse(strapiResponse);
-    if (result) {
-      return result;
+
+    if (strapiResponse.headers['set-cookie']) {
+      console.log('Session cookie set successfully.');
+      return { error: false, message: 'Success!'};
+    } else {
+      throw new Error ('Session cookie not set');
     }
+
   } catch (error) {
     console.error('Axios Error:', error);
     return handleAxiosError(error as AxiosError);
   }
-  console.log('Redirecting to /confirmation/message...');
-  redirect('/confirmation/message');
-}
+};
 
 // Handle Strapi response and extract error messages
 function handleStrapiResponse(response: AxiosResponse): SignUpFormStateT | null {

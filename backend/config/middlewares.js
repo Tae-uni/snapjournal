@@ -8,7 +8,7 @@ module.exports = ({ env }) => [
       enable: true,
       origin: ['https://localhost:3000'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
-      credential: true,
+      credentials: true,
     },
   },
   'strapi::poweredBy',
@@ -17,10 +17,11 @@ module.exports = ({ env }) => [
     name: 'strapi::session',
     config: {
       key: env.array('APP_KEYS_SESSION'),
-      maxAge: 360000,
+      maxAge: 3600000, // for an hour
       httpOnly: true,
       secure: env.bool('SESSION_SECURE_COOKIE', true),
       signed: true,
+      sameSite: 'none',
     },
   },
   'strapi::body',

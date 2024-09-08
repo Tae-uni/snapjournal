@@ -35,10 +35,6 @@ const registerUser = async (username, email, password, ctx) => {
 
     ctx.session.email = email;
 
-    console.log('CTX:', ctx);
-    console.log('CTX.SESSION:', ctx.session);
-    console.log('CTX.SESSION.EMAIL:', ctx.session ? ctx.session.email : 'undefined');
-
     const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
 
     const textContent = `
@@ -82,6 +78,9 @@ const registerUser = async (username, email, password, ctx) => {
     console.error('An error occurred in registerUser:', error);
     throw error;
   }
+  console.log('CTX:', ctx);
+  console.log('CTX.SESSION:', ctx.session);
+  console.log('CTX.SESSION.EMAIL:', ctx.session ? ctx.session.email : 'undefined');
 };
 
 // Function to resend confirmation email

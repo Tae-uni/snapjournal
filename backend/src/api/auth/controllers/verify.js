@@ -32,6 +32,9 @@ module.exports = {
 
   async resend(ctx) {
     const email = ctx.session.email;
+    console.log('Right after request resend', email);
+    console.log('Ctx session ', ctx.session.email);
+    
 
     if (!email) {
       return ctx.badRequest('No email found in session');

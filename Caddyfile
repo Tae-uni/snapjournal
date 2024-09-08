@@ -9,8 +9,8 @@ https://localhost:1337 {
   tls internal
   reverse_proxy localhost:8000 {
     header_up X-Forwarded-Proto {scheme}
-    header_up Host {http.request.host}
-    header_up X-Real-IP {http.request.remote}
-    header_up X-Forwarded-For {http.request.remote}
+    header_up Host {host}
+    header_up X-Real-IP {remote}
+    header_up X-Forwarded-For {remote}
   }
 }

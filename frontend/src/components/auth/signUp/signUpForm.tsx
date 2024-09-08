@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import signUpAction from "./signUpAction";
+import { useRouter } from "next/navigation";
 
 // In this project(signUpAction): In case of success, it won't return but redirect.
 
@@ -36,6 +37,8 @@ export default function SignUpForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [inputErrors, setInputErrors] = useState<InputErrorsT>({});
+
+  const router = useRouter();
 
   useEffect(() => {
     setPasswordMismatch(password !== confirmPassword);
@@ -71,8 +74,10 @@ export default function SignUpForm() {
       if (result.error && result.inputErrors) {
         setInputErrors(result.inputErrors);
       } else {
-      const email = formData.get('email') as string;
-      localStorage.setItem('userEmail', email);
+        // Ensure successfully set the session cookie before redirecting
+        if (result.message === 'Success!') {
+          router.push('/confirmation/message');
+        }
       }
     } catch (error) {
       setFormState({
