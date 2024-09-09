@@ -13,35 +13,35 @@ const generateAndSend = async (user, subject, textContent, htmlContent, expiresI
 };
 
 // Function to register a new user
-const registerUser = async (username, email, password, ctx) => {
-  try {
-    console.log('Request Headers:', ctx.request.headers);
+const registerUser = async (username, email, password) => {
+  // Check if username and email already exists from checkDup
+  await checkDuplicate(username, email);
 
-    if (!username || !email || !password) {
-      throw new Error('Missing username, email or password');
-    }
+  if (!username || !email || !password) {
+    throw new Error('Missing username, email or password');
+  }
 
-    // Check if username and email already exists from checkDup
-    await checkDuplicate(username, email);
+  // Add the new user to the DB with confirmed set to false
+  const user = await strapi.plugins['users-permissions'].services.user.add({
+    username,
+    email,
+    password,
+    provider: 'local',
+    confirmed: false,
+  });
 
-    // Add the new user to the DB with confirmed set to false
-    const user = await strapi.plugins['users-permissions'].services.user.add({
-      username,
-      email,
-      password,
-      provider: 'local',
-      confirmed: false,
-    });
+  return user;
+}
 
-    ctx.session.email = email;
+// Function to send verification email
+const sendVerificationEmail = async (user) => {
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
 
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
-
-    const textContent = `
+  const textContent = `
     Welcome to our service! Please confirm your email by visiting the following link: ${verificationLink}
   `
 
-    const htmlContent = `
+  const htmlContent = `
   <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 10px;">
     <img src="https://i.imgur.com/DR3r7ye.png" alt="verified" style="width: 100px; margin-top: 20px;" />
     <h1 style="color: #333;">Confirm Your Email</h1>
@@ -70,17 +70,7 @@ const registerUser = async (username, email, password, ctx) => {
   </style>
   `;
 
-    // Use the generateAndSend function to send email with 24h expiration
-    await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
-
-    console.log('Response Headers (after):', ctx.response.headers);
-  } catch (error) {
-    console.error('An error occurred in registerUser:', error);
-    throw error;
-  }
-  console.log('CTX:', ctx);
-  console.log('CTX.SESSION:', ctx.session);
-  console.log('CTX.SESSION.EMAIL:', ctx.session ? ctx.session.email : 'undefined');
+  await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
 };
 
 // Function to resend confirmation email
@@ -175,4 +165,4 @@ const resetPassword = async (token, newPassword) => {
   return user;
 }
 
-module.exports = { registerUser, resendConfirmationEmail, requestPasswordReset, resetPassword };
+module.exports = { registerUser, sendVerificationEmail, resendConfirmationEmail, requestPasswordReset, resetPassword };
