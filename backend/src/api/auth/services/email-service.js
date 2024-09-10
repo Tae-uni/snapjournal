@@ -35,6 +35,10 @@ const registerUser = async (username, email, password) => {
 
 // Function to send verification email
 const sendVerificationEmail = async (user) => {
+  if (!user || user.confirmed) {
+    throw new Error('User not found or already confirmed');
+  }
+
   const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
 
   const textContent = `
@@ -74,14 +78,12 @@ const sendVerificationEmail = async (user) => {
 };
 
 // Function to resend confirmation email
-const resendConfirmationEmail = async (ctx) => {
-  const email = ctx.session.email;
+const resendVerificationEmail = async (email) => {
+  const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
   console.log('resend', email);
   if (!email) {
     throw new Error('No email found in session');
   }
-
-  const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
 
   if (!user) {
     throw new Error('User not found');
@@ -91,42 +93,7 @@ const resendConfirmationEmail = async (ctx) => {
     throw new Error('This account is already confirmed');
   }
 
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
-
-  const textContent = `
-    Welcome to our service! Please confirm your email by visiting the following link: ${verificationLink}
-  `
-
-  const htmlContent = `
-  <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; text-align: center; border: 1px solid #ddd; border-radius: 10px;">
-    <img src="https://i.imgur.com/DR3r7ye.png" alt="verified" style="width: 100px; margin-top: 20px;" />
-    <h1 style="color: #333;">Confirm Your Email</h1>
-    <p style="color: #555;">Verifying your email gives you access to more features. <br /> Click the button below to confirm your email address.</p>
-    <a href="${verificationLink}" style="display: inline-block; padding: 15px 25px; color: #fff; background-color: #3498db; border-radius: 5px; text-decoration: none;">Confirm Email</a>
-    <p style="color: #999; font-size: 12px; margin-top: 30px;">If you did not request this email, you can safely ignore it.</p>
-  </div>
-  <style>
-    @media only screen and (max-width: 600px) {
-      div {
-        padding: 10px;
-      }
-      img {
-        width: 80px;
-      }
-      h1 {
-        font-size: 22px;
-      }
-      p {
-        font-size: 14px;
-      }
-      a {
-        padding: 10px 20px;
-      }
-    }
-  </style>
-  `;
-
-  await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
+  await sendVerificationEmail(user);
 };
 
 // Function to request password reset
@@ -165,4 +132,4 @@ const resetPassword = async (token, newPassword) => {
   return user;
 }
 
-module.exports = { registerUser, sendVerificationEmail, resendConfirmationEmail, requestPasswordReset, resetPassword };
+module.exports = { registerUser, sendVerificationEmail, resendVerificationEmail, requestPasswordReset, resetPassword };

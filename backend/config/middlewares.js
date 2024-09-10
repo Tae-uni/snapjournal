@@ -6,7 +6,7 @@ module.exports = ({ env }) => [
     name: 'strapi::cors',
     config: {
       enable: true,
-      origin: ['https://localhost:3000'],
+      origin: ['https://localhost:3000', 'https://localhost:1337'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       credentials: true,
     },

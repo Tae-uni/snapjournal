@@ -1,6 +1,6 @@
 'use strict';
 
-const { registerUser, sendVerificationEmail } = require('../services/email-service');
+const { registerUser, sendVerificationEmail, resendVerificationEmail } = require('../services/email-service');
 
 module.exports = {
   async register(ctx) {
@@ -14,24 +14,23 @@ module.exports = {
     } catch (error) {
       ctx.badRequest(error.message);
     }
+    console.log('Ctx register:', ctx);
+    console.log('Server session:', ctx.session.email);
   },
 
   async resend(ctx) {
     const email = ctx.session.email;
+    console.log('Ctx resend:', ctx);
+    console.log('Email from session', email);
     if (!email) {
       return ctx.badRequest('No email found in session');
     }
 
     try {
-      const user = await strapi.query('plugin::users-permissions.user').findOne({ where: { email } });
-      if (!user || user.confirmed) {
-        return ctx.badRequest('User not found or already confirmed');
-      }
-
-      await sendVerificationEmail(user);
+      await resendVerificationEmail(email);
       ctx.send({ message: 'Confirmation email resent successfully.' });
     } catch (error) {
-      ctx.badRequest('Error resending confirmation email');
+      ctx.badRequest('Error resending confirmation email: ' + error.message);
     }
   },
 };

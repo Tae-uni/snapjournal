@@ -19,7 +19,7 @@ module.exports = {
     {
       method: "POST",
       path: "/auth/local/resend-confirmation",
-      handler: "verify.resend",
+      handler: "auth.resend",
       config: {
         "policies": []
       }
