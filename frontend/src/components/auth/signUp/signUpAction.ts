@@ -3,7 +3,6 @@
 import { AxiosResponse, AxiosError } from "axios";
 
 import axiosInstance from "@/lib/axiosInstance";
-
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
@@ -38,20 +37,18 @@ export default async function signUpAction(
       { username, email, password },
       {
         headers: { 'Content-Type': 'application/json' },
-        withCredentials: true, // Important to allow cookies to be set
       }
     );
 
     console.log('Strapi Response Status:', strapiResponse.status);
     console.log('Strapi Response Data:', strapiResponse.data);
+    console.log('Token:', strapiResponse.data.jwt);
 
-    if (strapiResponse.headers['set-cookie']) {
-      console.log('Session cookie set successfully.');
-      return { error: false, message: 'Success!'};
-    } else {
-      throw new Error ('Session cookie not set');
+    if (strapiResponse.status === 200 && strapiResponse.data.jwt) {
+      return { error: false, message: 'Success!', token: strapiResponse.data.jwt };
     }
 
+    return { error: true, message: 'Registration failed' };
   } catch (error) {
     console.error('Axios Error:', error);
     return handleAxiosError(error as AxiosError);

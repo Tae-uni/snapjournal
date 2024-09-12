@@ -1,16 +1,25 @@
 'use strict';
 
-const { registerUser, sendVerificationEmail, resendVerificationEmail } = require('../services/email-service');
+const { registerUser, resendVerificationEmail } = require('../services/email-service');
 
 module.exports = {
   async register(ctx) {
     const { username, email, password } = ctx.request.body;
 
     try {
-      const user = await registerUser(username, email, password);
-      ctx.session.email = email;
-      await sendVerificationEmail(user);
-      ctx.send({ message: 'Registration successful, please check your email for verification.' });
+      const { user, token } = await registerUser(username, email, password);
+
+      ctx.cookies.set('authToken', token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'strict',
+      });
+
+      ctx.send({ 
+        user,
+        message: 'Registration successful, please check your email.'
+      });
     } catch (error) {
       ctx.badRequest(error.message);
     }
@@ -19,15 +28,14 @@ module.exports = {
   },
 
   async resend(ctx) {
-    const email = ctx.session.email;
-    console.log('Ctx resend:', ctx);
-    console.log('Email from session', email);
-    if (!email) {
-      return ctx.badRequest('No email found in session');
+    const token = ctx.cookies.get('authToken');
+
+    if (!token) {
+      return ctx.badRequest('No token found');
     }
 
     try {
-      await resendVerificationEmail(email);
+      await resendVerificationEmail(token);
       ctx.send({ message: 'Confirmation email resent successfully.' });
     } catch (error) {
       ctx.badRequest('Error resending confirmation email: ' + error.message);

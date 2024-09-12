@@ -24,12 +24,14 @@ export type SignUpFormStateT = {
   error: boolean;
   message: string;
   inputErrors?: InputErrorsT;
+  token?: string;
 };
 
 export default function SignUpForm() {
   const [formState, setFormState] = useState<SignUpFormStateT>({
     error: false,
     message: "",
+    token: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
