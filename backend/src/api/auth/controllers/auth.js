@@ -13,7 +13,7 @@ module.exports = {
         httpOnly: true,
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: 'strict',
+        sameSite: 'none',
       });
 
       ctx.send({ 
@@ -24,18 +24,21 @@ module.exports = {
       ctx.badRequest(error.message);
     }
     console.log('Ctx register:', ctx);
-    console.log('Server session:', ctx.session.email);
   },
 
   async resend(ctx) {
-    const token = ctx.cookies.get('authToken');
+    const body = ctx.request.body || {};
 
-    if (!token) {
+    if (Object.keys(body).length === 0) {
+      body.token = ctx.cookies.get('authToken');
+    }
+
+    if (!body.token) {
       return ctx.badRequest('No token found');
     }
 
     try {
-      await resendVerificationEmail(token);
+      await resendVerificationEmail(body.token);
       ctx.send({ message: 'Confirmation email resent successfully.' });
     } catch (error) {
       ctx.badRequest('Error resending confirmation email: ' + error.message);

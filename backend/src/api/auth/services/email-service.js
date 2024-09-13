@@ -69,7 +69,7 @@ const registerUser = async (username, email, password) => {
 
   await generateAndSend(user, 'Email Verification', textContent, htmlContent, '24h');
 
-  return { user, token };
+  return user;
 }
 
 // Function to resend confirmation email

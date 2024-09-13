@@ -19,7 +19,7 @@ module.exports = ({ env }) => [
       key: env.array('APP_KEYS_SESSION'),
       maxAge: 3600000, // for an hour
       httpOnly: true,
-      secure: env.bool('SESSION_SECURE_COOKIE', true),
+      secure: true,
       signed: true,
       sameSite: 'none',
     },

@@ -35,18 +35,15 @@ export default async function signUpAction(
     const strapiResponse = await axiosInstance.post(
       `/api/auth/local/registers`,
       { username, email, password },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
     );
+
+    if (strapiResponse.status === 200) {
+      return { error: false, message: 'Success!'};
+    }
 
     console.log('Strapi Response Status:', strapiResponse.status);
     console.log('Strapi Response Data:', strapiResponse.data);
     console.log('Token:', strapiResponse.data.jwt);
-
-    if (strapiResponse.status === 200 && strapiResponse.data.jwt) {
-      return { error: false, message: 'Success!', token: strapiResponse.data.jwt };
-    }
 
     return { error: true, message: 'Registration failed' };
   } catch (error) {

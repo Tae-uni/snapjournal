@@ -1,6 +1,6 @@
 'use strict';
 
-const { resendConfirmationEmail, requestPasswordReset, resetPassword } = require("../services/email-service");
+const { requestPasswordReset, resetPassword } = require("../services/email-service");
 const { verifyToken } = require("../../../utils/token");
 
 module.exports = {
@@ -27,25 +27,6 @@ module.exports = {
     } catch (error) {
       console.error('Error creating user:', error.message);
       ctx.badRequest('Error creating user');
-    }
-  },
-
-  async resend(ctx) {
-    const email = ctx.session.email;
-    console.log('Right after request resend', email);
-    console.log('Ctx session ', ctx.session.email);
-    
-
-    if (!email) {
-      return ctx.badRequest('No email found in session');
-    }
-
-    try {
-      await resendConfirmationEmail(email);
-      ctx.send({ message: 'Confirmation email resent successfully.' });
-    } catch (error) {
-      console.error('Error resending confirmation email:', error.message);
-      ctx.badRequest('Error resending confirmation email');
     }
   },
 
