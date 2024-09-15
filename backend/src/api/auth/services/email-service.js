@@ -30,9 +30,8 @@ const registerUser = async (username, email, password) => {
     confirmed: false,
   });
 
-  const token = generateToken({ id: user.id }, '24h');
-  
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token={token}`;
+  const emailVerificationToken = generateToken({ id: user.id }, '24h');
+  const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`;
 
   const textContent = `
     Welcome to our service! Please confirm your email by visiting the following link: ${verificationLink}

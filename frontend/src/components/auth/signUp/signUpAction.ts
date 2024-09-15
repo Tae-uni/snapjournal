@@ -35,6 +35,9 @@ export default async function signUpAction(
     const strapiResponse = await axiosInstance.post(
       `/api/auth/local/registers`,
       { username, email, password },
+      {
+        withCredentials: true,
+      }
     );
 
     if (strapiResponse.status === 200) {

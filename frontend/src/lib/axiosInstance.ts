@@ -6,7 +6,7 @@ const certPath: string = process.env.CADDY_CERT_PATH as string;
 
 const httpsAgent: https.Agent = new https.Agent({
   ca: fs.readFileSync(certPath),
-  // rejectUnauthorized: false,
+  rejectUnauthorized: false,
 });
 
 const axiosInstance: AxiosInstance = axios.create({
