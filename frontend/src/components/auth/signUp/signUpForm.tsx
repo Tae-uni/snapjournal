@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import signUpAction from "./signUpAction";
-import { useRouter } from "next/navigation";
 
 // In this project(signUpAction): In case of success, it won't return but redirect.
 

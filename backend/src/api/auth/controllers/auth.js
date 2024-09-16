@@ -15,24 +15,19 @@ module.exports = {
 
       ctx.cookies.set('authToken', authToken, {
         httpOnly: true,
-        secure: true,
+        secure: false,
         maxAge: 3600000,
-        sameSite: 'none',
+        sameSite: 'lax',
+        path: '/',
       });
 
-      console.log('authToken Cookie set with:', {
-        httpOnly: true,
-        secure: true,
-        maxAge: 3600000,
-        sameSite: 'none',
-      });
-
-      ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
-      ctx.set('Access-Control-Allow-Credentials', 'true');
+      ctx.set('Access-Control-Allow-Origin', 'http://localhost:3002');
+      ctx.set('Access-Control-Allow-Credentials', true);
 
       ctx.send({
         user,
-        message: 'Registration successful, please check your email.'
+        message: 'Registration successful, please check your email.',
+        token: authToken,
       });
     } catch (error) {
       ctx.badRequest(error.message);
@@ -41,7 +36,7 @@ module.exports = {
   },
 
   async resend(ctx) {
-    ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
+    ctx.set('Access-Control-Allow-Origin', 'http://localhost:3002');
     ctx.set('Access-Control-Allow-Credentials', 'true');
 
     const token = ctx.cookies.get('authToken');
