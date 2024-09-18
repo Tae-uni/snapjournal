@@ -15,19 +15,20 @@ module.exports = {
 
       ctx.cookies.set('authToken', authToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
+        // secureProxy: true,
         maxAge: 3600000,
-        sameSite: 'lax',
+        sameSite: 'none',
         path: '/',
       });
 
-      ctx.set('Access-Control-Allow-Origin', 'http://localhost:3002');
+      ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
       ctx.set('Access-Control-Allow-Credentials', true);
 
       ctx.send({
         user,
         message: 'Registration successful, please check your email.',
-        token: authToken,
+        // token: authToken,
       });
     } catch (error) {
       ctx.badRequest(error.message);
@@ -36,14 +37,14 @@ module.exports = {
   },
 
   async resend(ctx) {
-    ctx.set('Access-Control-Allow-Origin', 'http://localhost:3002');
-    ctx.set('Access-Control-Allow-Credentials', 'true');
+    ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
+    ctx.set('Access-Control-Allow-Credentials', true);
 
     const token = ctx.cookies.get('authToken');
-
-    if (!token) {
-      return ctx.badRequest('No auth token found in cookies');
-    }
+    // const token = ctx.request.header.authorization?.split(' ')[1];
+    // if (!token) {
+    //   return ctx.badRequest('No auth token found in cookies');
+    // }
 
     try {
       await resendVerificationEmail(token);

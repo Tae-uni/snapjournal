@@ -8,13 +8,13 @@ import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
 
-const config = {
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-  path: "/",
-  domain: "localhost",
-  httpOnly: true,
-  secure: false,
-}
+// const config = {
+//   maxAge: 60 * 60 * 24 * 7, // 1 week
+//   path: "/",
+//   domain: "localhost",
+//   httpOnly: true,
+//   secure: false,
+// }
 
 export default async function signUpAction(
   prevState: SignUpFormStateT,
@@ -41,8 +41,8 @@ export default async function signUpAction(
     console.log('Request URL:', `${axiosInstance.defaults.baseURL}/api/auth/local/registers`);
 
     // Send sign-up request to Strapi API
-    const strapiResponse = await axios.post(
-      `http://localhost:8000/api/auth/local/registers`,
+    const strapiResponse = await axiosInstance.post(
+      `/api/auth/local/registers`,
       { username, email, password },
       {
         withCredentials: true,
@@ -50,8 +50,8 @@ export default async function signUpAction(
     );
 
     if (strapiResponse.status === 200) {
-      const jwtToken = strapiResponse.data.jwt;
-      cookies().set("jwt", jwtToken, config);
+      // const jwtToken = strapiResponse.data.jwt;
+      // cookies().set("jwt", jwtToken, config);
 
       return { error: false, message: 'Success!' };
     }
