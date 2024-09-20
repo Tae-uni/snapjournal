@@ -11,9 +11,9 @@ import { SignUpFormStateT } from "./SignUpForm";
 // const config = {
 //   maxAge: 60 * 60 * 24 * 7, // 1 week
 //   path: "/",
-//   domain: "localhost",
+//   sameSite: "none" as "none",
 //   httpOnly: true,
-//   secure: false,
+//   secure: true,
 // }
 
 export default async function signUpAction(

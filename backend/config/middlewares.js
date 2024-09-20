@@ -19,20 +19,11 @@ module.exports = ({ env }) => [
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       credentials: true,
       keepHeaderOnError: true,
+      proxy: true,
     },
   },
   'strapi::query',
-  {
-    name: 'strapi::session',
-    config: {
-      key: env.array('APP_KEYS_SESSION'),
-      maxAge: 3600000, // for an hour
-      httpOnly: true,
-      // secure: true,
-      signed: true,
-      sameSite: 'none',
-    },
-  },
+  'strapi::session',
   'strapi::body',
   'strapi::favicon',
   'strapi::public',

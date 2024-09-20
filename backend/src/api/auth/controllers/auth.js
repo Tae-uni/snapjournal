@@ -18,8 +18,9 @@ module.exports = {
         secure: true,
         // secureProxy: true,
         maxAge: 3600000,
-        sameSite: 'none',
+        sameSite: 'lax',
         path: '/',
+        proxy: true,
       });
 
       ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
