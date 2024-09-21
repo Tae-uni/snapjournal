@@ -27,4 +27,13 @@ module.exports = ({ env }) => [
   'strapi::body',
   'strapi::favicon',
   'strapi::public',
+  {
+    name: 'global::cookie-setter',
+    resolve: './src/middlewares/cookie-setter',
+  },
+
+  {
+    name: 'global::cookie-getter',
+    resolve: './src/middlewares/cookie-getter',
+  },
 ];

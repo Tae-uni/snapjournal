@@ -46,6 +46,9 @@ module.exports = {
     // if (!token) {
     //   return ctx.badRequest('No auth token found in cookies');
     // }
+    if (token) {
+      ctx.request.header.authorization = `Bearer %{token}`;
+    }
 
     try {
       await resendVerificationEmail(token);
