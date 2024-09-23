@@ -5,7 +5,6 @@ module.exports = {
       path: "/auth/local/registers",
       handler: "auth.register",
       config: {
-        middlewares: ['global::cookieSetter'],
       },
     },
     {
@@ -21,7 +20,6 @@ module.exports = {
       path: "/auth/local/resend-confirmation",
       handler: "auth.resend",
       config: {
-        "middlewares": ['global::cookieGetter'],
       }
     },
     {

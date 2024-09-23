@@ -1,20 +1,21 @@
 "use server";
 
-import axios, { AxiosResponse, AxiosError } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { cookies } from "next/headers";
 
 import axiosInstance from "@/lib/axiosInstance";
+
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
 
-// const config = {
-//   maxAge: 60 * 60 * 24 * 7, // 1 week
-//   path: "/",
-//   sameSite: "none" as "none",
-//   httpOnly: true,
-//   secure: true,
-// }
+const config = {
+  maxAge: 60 * 60 * 24 * 7, // 1 week
+  path: "/",
+  sameSite: "none" as "none",
+  httpOnly: true,
+  secure: true,
+}
 
 export default async function signUpAction(
   prevState: SignUpFormStateT,
@@ -50,8 +51,8 @@ export default async function signUpAction(
     );
 
     if (strapiResponse.status === 200) {
-      // const jwtToken = strapiResponse.data.jwt;
-      // cookies().set("jwt", jwtToken, config);
+      const jwtToken = strapiResponse.data.jwt;
+      cookies().set("authJwt", jwtToken, config);
 
       return { error: false, message: 'Success!' };
     }

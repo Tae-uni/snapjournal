@@ -13,18 +13,18 @@ module.exports = {
       const authToken = generateToken({ id: user.id }, '1h');
       console.log(authToken);
 
-      ctx.cookies.set('authToken', authToken, {
-        httpOnly: true,
-        secure: true,
-        // secureProxy: true,
-        maxAge: 3600000,
-        sameSite: 'lax',
-        path: '/',
-        proxy: true,
-      });
-
       ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
       ctx.set('Access-Control-Allow-Credentials', true);
+
+      // ctx.cookies.set('authToken', authToken, {
+      //   httpOnly: false,
+      //   secure: true,
+      //   // secureProxy: true,
+      //   maxAge: 3600000,
+      //   sameSite: 'none',
+      //   path: '/',
+      //   // proxy: true,
+      // });
 
       ctx.send({
         user,
@@ -47,7 +47,7 @@ module.exports = {
     //   return ctx.badRequest('No auth token found in cookies');
     // }
     if (token) {
-      ctx.request.header.authorization = `Bearer %{token}`;
+      ctx.request.header.authorization = `Bearer ${token}`;
     }
 
     try {

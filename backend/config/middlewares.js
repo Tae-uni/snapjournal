@@ -19,7 +19,6 @@ module.exports = ({ env }) => [
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       credentials: true,
       keepHeaderOnError: true,
-      proxy: true,
     },
   },
   'strapi::query',
@@ -27,13 +26,4 @@ module.exports = ({ env }) => [
   'strapi::body',
   'strapi::favicon',
   'strapi::public',
-  {
-    name: 'global::cookie-setter',
-    resolve: './src/middlewares/cookie-setter',
-  },
-
-  {
-    name: 'global::cookie-getter',
-    resolve: './src/middlewares/cookie-getter',
-  },
 ];
