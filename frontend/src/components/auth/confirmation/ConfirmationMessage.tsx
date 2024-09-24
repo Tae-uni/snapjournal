@@ -6,15 +6,23 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { resendConfirmationEmail } from './confirmationMessageAction';
+import axios from 'axios';
 
 
 export default function ConfirmationMessage() {
   const [emailSent, setEmailSent] = useState(false);
 
   const resendEmail = async () => {
-    const success = await resendConfirmationEmail();
-    if (success) {
-      setEmailSent(true);
+    try {
+      const response = await axios.post('/api/email/resend', {}, { withCredentials: true });
+
+      if (response.data.success) {
+        setEmailSent(true);
+      } else {
+        console.error(response.data.error);
+      }
+    } catch (error) {
+      console.error('Error resending email:', error);
     }
   };
   

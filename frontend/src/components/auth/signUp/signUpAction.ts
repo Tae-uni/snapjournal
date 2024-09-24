@@ -13,7 +13,7 @@ const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
   path: "/",
   sameSite: "none" as "none",
-  httpOnly: true,
+  httpOnly: false,
   secure: true,
 }
 
@@ -52,7 +52,7 @@ export default async function signUpAction(
 
     if (strapiResponse.status === 200) {
       const jwtToken = strapiResponse.data.jwt;
-      cookies().set("authJwt", jwtToken, config);
+      cookies().set("auth", jwtToken, config);
 
       return { error: false, message: 'Success!' };
     }
