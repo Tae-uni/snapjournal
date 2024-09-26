@@ -15,4 +15,10 @@ const axiosInstance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-export default axiosInstance;
+const localAxiosInstance: AxiosInstance = axios.create({
+  baseURL: process.env.NEXTAUTH_URL || 'https://localhost:3000',
+  httpsAgent,
+  withCredentials: true,
+});
+
+export { axiosInstance, localAxiosInstance} ;

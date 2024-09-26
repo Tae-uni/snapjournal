@@ -11,7 +11,7 @@ module.exports = {
       const user = await registerUser(username, email, password);
 
       const authToken = generateToken({ id: user.id }, '1h');
-      console.log(authToken);
+      console.log('authToken',authToken);
 
       ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
       ctx.set('Access-Control-Allow-Credentials', true);
@@ -26,10 +26,13 @@ module.exports = {
       //   // proxy: true,
       // });
 
+      // const cookieValue = ctx.cookies.get('authToken');
+      // console.log('cookies:', cookieValue);
+
       ctx.send({
         user,
         message: 'Registration successful, please check your email.',
-        // token: authToken,
+        token: authToken,
       });
     } catch (error) {
       ctx.badRequest(error.message);
@@ -38,10 +41,15 @@ module.exports = {
   },
 
   async resend(ctx) {
+    console.log('Hi this is resend logic');
     ctx.set('Access-Control-Allow-Origin', 'https://localhost:3000');
     ctx.set('Access-Control-Allow-Credentials', true);
 
-    const token = ctx.request.header.authorization?.split(' ')[1];
+    console.log('Headers:', ctx.request.headers);
+    console.log('Hi this is resend logic');
+
+    const token = ctx.request.headers.authorization?.split('')[2];
+    console.log('Successfully get the token',token);
     if (!token) {
       return ctx.badRequest('No auth token found in headers');
     }

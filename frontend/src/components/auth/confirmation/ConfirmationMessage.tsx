@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { resendConfirmationEmail } from './confirmationMessageAction';
+import { resendAction } from './confirmationMessageAction';
 import axios from 'axios';
 
 
@@ -14,18 +14,31 @@ export default function ConfirmationMessage() {
 
   const resendEmail = async () => {
     try {
-      const response = await axios.post('/api/email/resend', {}, { withCredentials: true });
-
-      if (response.data.success) {
+      const success = await resendAction();
+      if (success) {
         setEmailSent(true);
       } else {
-        console.error(response.data.error);
+        console.error('Error resending...')
       }
     } catch (error) {
-      console.error('Error resending email:', error);
+      console.error('An error occurred:', error);
+    } finally {
+      setEmailSent(false);
     }
-  };
-  
+  }
+  //   try {
+  //     const response = await axios.post('/api/identity/resend', {}, { withCredentials: true });
+
+  //     if (response.data.success) {
+  //       setEmailSent(true);
+  //     } else {
+  //       console.error(response.data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error resending email:', error);
+  //   }
+  // };
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md p-8">

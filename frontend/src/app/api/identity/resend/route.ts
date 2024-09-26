@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import axiosInstance from "@/lib/axiosInstance";
+import { axiosInstance } from "@/lib/axiosInstance";
+
 
 export async function POST() {
   try {
@@ -9,13 +10,14 @@ export async function POST() {
     }
 
     const jwtToken = cookies().get('auth')?.value;
+    console.log('Token get:',jwtToken)
 
     if (!jwtToken) {
       return NextResponse.json({ error: 'Cannot get the cookies' }, { status: 400 });
     }
 
     const response = await axiosInstance.post(
-      `/api/auth/local/resend-confirmation`,
+      '/api/auth/local/resend-confirmation',
       {},
       {
         headers: {

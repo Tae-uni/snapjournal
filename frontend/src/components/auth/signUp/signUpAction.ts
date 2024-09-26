@@ -1,18 +1,17 @@
 "use server";
 
-import { AxiosResponse, AxiosError } from "axios";
 import { cookies } from "next/headers";
+import { AxiosResponse, AxiosError } from "axios";
 
-import axiosInstance from "@/lib/axiosInstance";
-
+import { axiosInstance } from "@/lib/axiosInstance";
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 week
-  path: "/",
-  sameSite: "none" as "none",
+  path: '/',
+  sameSite: 'none' as 'none',
   httpOnly: false,
   secure: true,
 }
@@ -42,26 +41,23 @@ export default async function signUpAction(
     console.log('Request URL:', `${axiosInstance.defaults.baseURL}/api/auth/local/registers`);
 
     // Send sign-up request to Strapi API
-    const strapiResponse = await axiosInstance.post(
-      `/api/auth/local/registers`,
-      { username, email, password },
+    const response = await axiosInstance.post(
+      '/api/auth/local/registers',
       {
-        withCredentials: true,
-      }
-    );
+        username, email, password
+      });
 
-    if (strapiResponse.status === 200) {
-      const jwtToken = strapiResponse.data.jwt;
-      cookies().set("auth", jwtToken, config);
+    console.log('Strapi Response Status:', response.status);
+    console.log('Strapi Response Data:', response.data);
+    console.log('Token:', response.data.token);
 
-      return { error: false, message: 'Success!' };
+    if (response.status === 200) {
+      const authToken = response.data.token;
+      cookies().set('auth', authToken, config);
+      return { error: false, message: 'Success!' }
     }
+    return { error: false, message: 'Error!' }
 
-    console.log('Strapi Response Status:', strapiResponse.status);
-    console.log('Strapi Response Data:', strapiResponse.data);
-    console.log('Token:', strapiResponse.data.jwt);
-
-    return { error: true, message: 'Registration failed' };
   } catch (error) {
     console.error('Axios Error:', error);
     return handleAxiosError(error as AxiosError);

@@ -1,19 +1,21 @@
 "use server";
 
 import { getCookie } from "@/lib/authCookie";
-import axiosInstance from "@/lib/axiosInstance";
+import { axiosInstance } from "@/lib/axiosInstance";
 import { cookies } from "next/headers";
 
-export const resendConfirmationEmail = async () => {
+export async function resendAction() {
   try {
 
-    const jwtToken = getCookie("authJwt");
+    const jwtToken = cookies().get('auth')?.value
     // console.log('JWT Token:', jwtToken);
 
     if (!jwtToken) {
       console.error('JWT token not found in cookies.');
       return false;
     }
+
+    console.log('Token get:', jwtToken);
 
     const response = await axiosInstance.post('/api/auth/local/resend-confirmation',
       {},
