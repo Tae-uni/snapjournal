@@ -14,17 +14,15 @@ export default function ConfirmationMessage() {
 
   const resendEmail = async () => {
     try {
-      const success = await resendAction();
-      if (success) {
+      const result = await resendAction();
+      if (result) {
         setEmailSent(true);
       } else {
         console.error('Error resending...')
       }
     } catch (error) {
       console.error('An error occurred:', error);
-    } finally {
-      setEmailSent(false);
-    }
+    } 
   }
   //   try {
   //     const response = await axios.post('/api/identity/resend', {}, { withCredentials: true });

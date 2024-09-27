@@ -48,7 +48,10 @@ module.exports = {
     console.log('Headers:', ctx.request.headers);
     console.log('Hi this is resend logic');
 
-    const token = ctx.request.headers.authorization?.split('')[2];
+    // It's not working properly. If I set from 'confirmationMessageAction' `Bearer Bearer ${jwt}` and get the token [2] like down below, it works.
+    // const token = ctx.request.headers.authorization?.split(' ')[2];
+    const token = ctx.request.headers.authorization?.split(' ')[1];
+
     console.log('Successfully get the token',token);
     if (!token) {
       return ctx.badRequest('No auth token found in headers');

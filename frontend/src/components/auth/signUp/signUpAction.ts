@@ -9,11 +9,11 @@ import { formSchema } from "@/components/utils/validationSchemas";
 import { SignUpFormStateT } from "./SignUpForm";
 
 const config = {
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-  path: '/',
-  sameSite: 'none' as 'none',
-  httpOnly: false,
+  httpOnly: true,
   secure: true,
+  maxAge: 60 * 60 * 24 * 7, // 1 week
+  // path: '/',
+  sameSite: 'none' as 'none',
 }
 
 export default async function signUpAction(
