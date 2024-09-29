@@ -8,13 +8,13 @@ import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
 
-const config = {
-  httpOnly: true,
-  secure: true,
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-  // path: '/',
-  sameSite: 'none' as 'none',
-}
+// const config = {
+//   httpOnly: true,
+//   secure: true,
+//   maxAge: 60 * 60 * 24 * 7, // 1 week
+//   // path: '/',
+//   sameSite: 'none' as 'none',
+// }
 
 export default async function signUpAction(
   prevState: SignUpFormStateT,
@@ -42,7 +42,7 @@ export default async function signUpAction(
 
     // Send sign-up request to Strapi API
     const response = await axiosInstance.post(
-      '/api/auth/local/registers',
+      '/api/auth/local/register',
       {
         username, email, password
       });
@@ -53,7 +53,7 @@ export default async function signUpAction(
 
     if (response.status === 200) {
       const authToken = response.data.token;
-      cookies().set('auth', authToken, config);
+      // cookies().set('auth', authToken, config);
       return { error: false, message: 'Success!' }
     }
     return { error: false, message: 'Error!' }

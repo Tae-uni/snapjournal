@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "moduleResolution": "nodenext",
-    "module": "NodeNext",
+    "moduleResolution": "node",
+    "module": "CommonJS",
     "target": "ES2021",
-    "checkJs": true,
+    "checkJs": false,
     "allowJs": true,
     "typeRoots": ["./node_modules/@types"]
   }
