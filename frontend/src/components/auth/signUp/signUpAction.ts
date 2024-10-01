@@ -1,20 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
-import { AxiosResponse, AxiosError } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 import { axiosInstance } from "@/lib/axiosInstance";
 import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
-
-// const config = {
-//   httpOnly: true,
-//   secure: true,
-//   maxAge: 60 * 60 * 24 * 7, // 1 week
-//   // path: '/',
-//   sameSite: 'none' as 'none',
-// }
 
 export default async function signUpAction(
   prevState: SignUpFormStateT,
@@ -38,8 +29,6 @@ export default async function signUpAction(
   const { username, email, password } = validatedFields.data;
 
   try {
-    console.log('Request URL:', `${axiosInstance.defaults.baseURL}/api/auth/local/registers`);
-
     // Send sign-up request to Strapi API
     const response = await axiosInstance.post(
       '/api/auth/local/register',
@@ -52,14 +41,11 @@ export default async function signUpAction(
     console.log('Token:', response.data.token);
 
     if (response.status === 200) {
-      const authToken = response.data.token;
-      // cookies().set('auth', authToken, config);
       return { error: false, message: 'Success!' }
     }
-    return { error: false, message: 'Error!' }
+    return { error: true, message: 'Error during registration process' };
 
   } catch (error) {
-    console.error('Axios Error:', error);
     return handleAxiosError(error as AxiosError);
   }
 };
@@ -94,7 +80,7 @@ function extractErrorMessage(data: any): SignUpFormStateT {
     if (errorMessage.includes('email')) {
       result.message = 'Email already exists.';
     } else if (errorMessage.includes('username')) {
-      result.message = 'Username already exists.';
+      result.message = 'Email or Username are already exists.';
     } else {
       result.message = errorMessage;
     }
