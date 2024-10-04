@@ -1,7 +1,7 @@
-#Proxy
+# Proxy
 
 ## What is Proxy
-A proxy server is a system or router that provides a gateway between users and the internet. and intermediary server that retrieves data from an Interent source, such as a webpage. They act as additional data security boundaries protecting users from malicious activity on the internet.  
+A proxy server is a system or router that provides a gateway between users and the internet. and intermediary server that retrieves data from an Internet source, such as a webpage. They act as additional data security boundaries protecting users from malicious activity on the internet.  
 
 ## Types of Proxy Servers
 There are many different types of proxy servers such as Anonymous Proxy, SIP Proxy, etc... But in this document, let's talk about only `Forward Proxy Server` and `Reverse Proxy Server`.  
@@ -28,5 +28,5 @@ There are many different types of proxy servers such as Anonymous Proxy, SIP Pro
 - **Denying Requests**: If the proxy denies the request, it sends the user an error message or redirects them as necessary.
   
   
-####Reference
+#### Reference
 [Proxy](https://www.upguard.com/blog/proxy-server)

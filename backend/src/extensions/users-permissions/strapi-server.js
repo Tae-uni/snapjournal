@@ -1,32 +1,22 @@
 module.exports = (plugin) => {
+  // Original register function from the Strapi plugin
+  const originRegister = plugin.controllers.auth.register;
+
+  // Override the original register function
   plugin.controllers.auth.register = async (ctx) => {
     const { email, username } = ctx.request.body;
     console.log('Strapi info', email, username);
-    await strapi.plugins['users-permissions'].controllers.auth.register(ctx);
 
-    //   try {
-    //     const existingUser = await strapi.query('plugin::users-permissions.user').findOne({
-    //       where: {
-    //         $or: [{ email }, { username }],
-    //       },
-    //     });
+    // Get the user's info through the query
+    const existingEmailUser = await strapi.query('plugin::users-permissions.user').findOne({
+      where: { email: email.toLowerCase() }
+    });
 
-    //     if (existingUser) {
-    //       if (existingUser.email === email) {
-    //         return ctx.badRequest('Email is already taken');
-    //       } else if (existingUser.username === username) {
-    //         return ctx.badRequest('Email or username are already taken');
-    //       }
-    //     }
+    if (existingEmailUser) {
+      return ctx.badRequest('Email already exists.');
+    }
 
-    //     await strapi.plugins['users-permissions'].controllers.auth.register(ctx);
-
-    //   } catch (error) {
-    //     console.error('Error during registration', error);
-    //     return ctx.badRequest('Registration failed due to server error');
-    //   }
-    // };
-
+    await originRegister(ctx);
   };
   return plugin;
 }
