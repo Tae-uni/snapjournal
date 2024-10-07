@@ -20,5 +20,8 @@ I implemented user registration in Strapi using a custom controller, endpoint(`r
 
 ## Solutions
 
+
+
 ## References
-[OAuth2](https://oauth.net/2/)
+- [OAuth2](https://oauth.net/2/)  
+- [Google-OAuth2](https://developers.google.com/identity/protocols/oauth2/javascript-implicit-flow)

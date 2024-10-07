@@ -12,10 +12,15 @@ module.exports = () => ({
     provider: 'nodemailer',
     providerOptions: {
       host: 'smtp.gmail.com',
-      port: 587,
+      port: 465,
+      secure: true,
       auth: {
+        type: 'OAuth2',
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
+        clientId: process.env.GMAIL_OAUTH_CLIENT_ID,
+        clientSecret: process.env.GMAIL_OAUTH_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_OAUTH_REFRESH_TOKEN,
       },
     },
     settings: {
