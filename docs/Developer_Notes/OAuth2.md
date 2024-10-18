@@ -19,7 +19,7 @@ I implemented user registration in Strapi using a custom controller, endpoint(`r
 ```
 
 ## Solutions
-
+Even though I changed to OAuth2.0 provider, still occurs the same errors. 
 
 
 ## References

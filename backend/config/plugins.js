@@ -20,6 +20,7 @@ module.exports = () => ({
         pass: process.env.EMAIL_PASS,
         clientId: process.env.GMAIL_OAUTH_CLIENT_ID,
         clientSecret: process.env.GMAIL_OAUTH_CLIENT_SECRET,
+        accessToken: process.env.GMAIL_OAUTH_ACCESS_TOKEN,
         refreshToken: process.env.GMAIL_OAUTH_REFRESH_TOKEN,
       },
     },

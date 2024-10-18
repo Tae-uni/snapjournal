@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const formSchema = z.object({
   username: z.string()
-    .min(2, { message: "Min 2 characters" })
-    .max(30, { message: "Max 30 characters" }).trim(),
+    .min(3, { message: "Min 3 characters" })
+    .max(20, { message: "Max 20 characters" }).trim(),
   email: z.string()
     .email('Enter a valid email.').trim(),
   password: z.string()
