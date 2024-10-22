@@ -5,13 +5,19 @@ https://localhost:3000 {
 }
 
 # Backend Strapi server on localhost:1337
-https://localhost:1337 {
+#https://localhost:1337 {
+#  tls internal
+#  reverse_proxy localhost:8000 {
+#    header_up X-Forwarded-Proto {scheme}
+#    header_up Host {host}
+#    header_up X-Real-IP {remote}
+#    header_up X-Forwarded-For {remote}
+#    header_up Set-Cookie {http.response.header.Set-Cookie}
+#  }
+# }
+
+# Express server
+https://localhost:5004 {
   tls internal
-  reverse_proxy localhost:8000 {
-    header_up X-Forwarded-Proto {scheme}
-    header_up Host {host}
-    header_up X-Real-IP {remote}
-    header_up X-Forwarded-For {remote}
-    header_up Set-Cookie {http.response.header.Set-Cookie}
-  }
+  reverse_proxy localhost:5002
 }

@@ -30,8 +30,9 @@ export const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    await newUser.save();
-    return res.status(201).send({ msg: "Registration successful" });
+    const savedUser = await newUser.save();
+
+    return { email: savedUser.email, userId: savedUser._id };
   } catch (err) {
     handleError(err, res);
   }
