@@ -2,7 +2,7 @@ export const userValidationSchema = {
   username: {
     trim: true,
     isLength: {
-      options: { min: 3, max: 20 },
+      options: {min: 3, max: 20},
       errorMessage: "Username must be at least 3 characters with a max of 20 characters."
     },
     notEmpty: {
@@ -38,21 +38,42 @@ export const userValidationSchema = {
   password: {
     trim: true,
     isLength: {
-      options: { min: 6, max: 30 },
+      options: {min: 6, max: 30},
       errorMessage: "Password must be at least 6 characters with a max of 30 characters.",
     },
     notEmpty: {
-      errorMessage: "Email cannot be empty."
+      errorMessage: "Password cannot be empty."
     },
     matches: {
-      options:
-        /[A-Za-z]/,
-        errorMessage: "Password must contain a letter",
+      options: /[A-Za-z]/,
+      errorMessage: "Password must contain at least one letter."
     },
     matches: {
-      options:
-        /[0-9]/,
-        errorMessage: "Password must contain a number",
+      options: /[0-9]/,
+      errorMessage: "Password must contain at least one number."
     },
-  }
+  },
+};
+
+export const signInValidationSchema = {
+  email: {
+    trim: true,
+    isEmail: {
+      errorMessage: "Enter a valid email.",
+    },
+    notEmpty: {
+      errorMessage: "Email cannot be empty.",
+    },
+    normalizeEmail: true,
+  },
+  password: {
+    trim: true,
+    isLength: {
+      options: { min: 6 },
+      errorMessage: "Password must be at least 6 characters."
+    },
+    notEmpty: {
+      errorMessage: "Password cannot be empty."
+    },
+  },
 }
