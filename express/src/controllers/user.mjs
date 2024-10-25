@@ -1,3 +1,5 @@
+// Todo Register, Profile Management
+
 import { User } from "../models/User.mjs";
 import { hashPassword } from "../utils/hashUtils.mjs";
 import bcrypt from "bcrypt";

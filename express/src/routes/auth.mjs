@@ -1,8 +1,9 @@
 import { Router } from "express";
 
+import { validateUserLogIn, validateUserRegistration } from "../middlewares/validationMiddleware.mjs";
 import { register, signIn } from "../controllers/user.mjs";
 import { sendVerificationEmailHandler } from "../controllers/email.mjs";
-import { validateUserLogIn, validateUserRegistration } from "../middlewares/validationMiddleware.mjs";
+import { handleOAuthUser } from "../controllers/auth.mjs";
 
 const router = Router();
 
@@ -17,6 +18,17 @@ router.post('/auth/register', validateUserRegistration, async (req, res) => {
   }
 });
 
+router.post('/auth/oauth', async (req, res) => {
+  const { email, username, provider, providerUserId } = req.body;
+
+  try {
+    const { msg } = await handleOAuthUser(req, res);
+    res.status(201).send({ msg: "OAuth user registered successfully" });
+  } catch (err) {
+    res.status(500).send({ msg: "OAuth user register failed" });
+  }
+});
+
 router.post('/auth/login', validateUserLogIn, async (req, res) => {
   try {
     const { msg } = await signIn(req, res);
@@ -27,6 +39,6 @@ router.post('/auth/login', validateUserLogIn, async (req, res) => {
     }
     res.status(500).send({ msg: "Login failed" });
   }
-})
+});
 
 export default router;

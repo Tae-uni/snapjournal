@@ -13,8 +13,21 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.provider;
+    },
   },
+  /* For SNS LogIn */
+  provider: {
+    type: String,
+  },
+  providerUserId: {
+    type: String,
+  },
+  accessToken: {
+    type: String,
+  },
+
   isVerified: {
     type: Boolean,
     default: false,
