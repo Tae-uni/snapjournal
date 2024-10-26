@@ -1,6 +1,7 @@
 // Todo Log-in, Log-out, Password Reset,
 import { User } from "../models/User.mjs";
 
+// Instagram, Google Sign-up, Sign-in
 export const handleOAuthUser = async (req, res) => {
   const { provider, accessToken, providerUserId, email, username } = req.body;
 
@@ -33,6 +34,6 @@ export const handleOAuthUser = async (req, res) => {
     return { msg: "User logged in successfully" };
   } catch (err) {
     console.error("OAuth user handling error:", err);
-
+    return err;
   }
 }

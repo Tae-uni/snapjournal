@@ -1,20 +1,26 @@
 // Todo Register, Profile Management
+import bcrypt from "bcrypt";
 
 import { User } from "../models/User.mjs";
 import { hashPassword } from "../utils/hashUtils.mjs";
-import bcrypt from "bcrypt";
 
-const checkEmailExists = async (email) => {
-  const existingEmail = await User.findOne({ email });
-  if (existingEmail) {
-    throw new Error('EMAIL_TAKEN');
+const checkUserExists = async (email, username) => {
+  const existingUser = await User.findOne({
+    $or: [{ email }, { username }],
+  });
+
+  if (!existingUser) return;
+
+  if (existingUser.email === email) {
+    if (existingUser.provider && !existingUser.password) {
+      throw new Error("EMAIL_EXIST");
+    }
+    // Local account
+    throw new Error("EMAIL_EXIST");
   }
-};
 
-const checkUsernameExists = async (username) => {
-  const existingUsername = await User.findOne({ username });
-  if (existingUsername) {
-    throw new Error('USERNAME_TAKEN');
+  if (existingUser.username === username) {
+    throw new Error("USERNAME_EXIST");
   }
 };
 
@@ -22,8 +28,7 @@ export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    await checkEmailExists(email);
-    await checkUsernameExists(username);
+    await checkUserExists(email, username);
 
     const hashedPassword = await hashPassword(password);
 
@@ -59,4 +64,4 @@ export const signIn = async (req, res) => {
     console.log("Sign-in error:", err);
     throw err;
   }
-}
+};
