@@ -18,13 +18,17 @@ export const handleOAuthUser = async (req, res) => {
     }
 
     // If local account exist, connect with SNS account.
+    // if (!user.provider && user.email === email) {
+    //   user.provider = provider;
+    //   user.providerUserId = providerUserId;
+    //   user.accessToken = accessToken;
+    //   user.isVerified = true;
+    //   await user.save();
+    //   return { msg: "User account linked with SNS successfully. "};
+    // }
+
     if (!user.provider && user.email === email) {
-      user.provider = provider;
-      user.providerUserId = providerUserId;
-      user.accessToken = accessToken;
-      user.isVerified = true;
-      await user.save();
-      return { msg: "User account linked with SNS successfully. "};
+      throw new Error("EMAIL_EXIST");
     }
 
     // Access token renew
@@ -33,7 +37,7 @@ export const handleOAuthUser = async (req, res) => {
 
     return { msg: "User logged in successfully" };
   } catch (err) {
-    console.error("OAuth user handling error:", err);
-    return err;
+    // console.error("OAuth user handling error:", err);
+    throw err;
   }
 }

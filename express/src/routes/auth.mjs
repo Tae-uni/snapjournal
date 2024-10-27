@@ -32,6 +32,9 @@ router.post('/auth/oauth', async (req, res) => {
     const result = await handleOAuthUser(req, res);
     res.status(201).send({ msg: "OAuth user registered successfully" });
   } catch (err) {
+    if (err.message === "EMAIL_EXIST") {
+      return res.status(400).send({ msg: "An account with this email already exist. Please log in." });
+    }
     res.status(500).send({ msg: "OAuth user register failed" });
   }
 });
