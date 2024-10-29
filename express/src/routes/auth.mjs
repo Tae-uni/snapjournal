@@ -18,9 +18,6 @@ router.post('/auth/register', validateUserRegistration, async (req, res) => {
     if (err.message === "EMAIL_EXIST") {
       return res.status(400).send("An account with this email already exist. Please log in.");
     }
-    if (err.message === "USERNAME_EXIST") {
-      return res.status(400).send("An account with this username is already exist.");
-    }
     res.status(500).send({ msg: "Registration or email sending failed" });
   }
 });

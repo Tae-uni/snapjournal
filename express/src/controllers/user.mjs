@@ -2,40 +2,50 @@
 import bcrypt from "bcrypt";
 
 import { User } from "../models/User.mjs";
+
 import { hashPassword } from "../utils/hashUtils.mjs";
+import { generateTag } from "../utils/generateTag.mjs";
 
-const checkUserExists = async (email, username) => {
-  const existingUser = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+// const checkUserExists = async (email, username) => {
+//   const existingUser = await User.findOne({
+//     $or: [{ email }, { username }],
+//   });
 
-  if (!existingUser) return;
+//   if (!existingUser) return;
 
-  if (existingUser.email === email) {
-    if (existingUser.provider && !existingUser.password) {
-      throw new Error("EMAIL_EXIST");
-    }
-    // Local account
-    throw new Error("EMAIL_EXIST");
-  }
+//   if (existingUser.email === email) {
+//     if (existingUser.provider && !existingUser.password) {
+//       throw new Error("EMAIL_EXIST");
+//     }
+//     // Local account
+//     throw new Error("EMAIL_EXIST");
+//   }
 
-  if (existingUser.username === username) {
-    throw new Error("USERNAME_EXIST");
-  }
-};
+//   if (existingUser.username === username) {
+//     throw new Error("USERNAME_EXIST");
+//   }
+// };
 
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    await checkUserExists(email, username);
+    const existingUserEmail = await User.findOne({ email });
+    if (existingUserEmail) {
+      throw new Error("EMAIL_EXIST");
+    }
+
+    const usernameTag = await generateTag(username);
+    console.log(usernameTag);
 
     const hashedPassword = await hashPassword(password);
 
     const newUser = new User({
       username,
+      usernameTag,
       email,
       password: hashedPassword,
+      isVerified: false,
     });
 
     const savedUser = await newUser.save();
