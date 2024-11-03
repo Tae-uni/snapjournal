@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
   accessToken: {
     type: String,
   },
-
   isVerified: {
     type: Boolean,
     default: false,
@@ -42,5 +41,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
 });
+
+userSchema.index({ username: 1, usernameTag: 1 }, { unique: true });
 
 export const User = mongoose.model('User', userSchema);

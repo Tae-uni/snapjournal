@@ -1,5 +1,5 @@
-import {checkSchema, validationResult} from "express-validator";
-import {signInValidationSchema, userValidationSchema} from "../schemas/userValidationSchema.mjs";
+import { checkSchema, validationResult } from "express-validator";
+import { signInValidationSchema, userValidationSchema } from "../schemas/userValidationSchema.mjs";
 
 export const validateUserRegistration = [
   checkSchema(userValidationSchema),
