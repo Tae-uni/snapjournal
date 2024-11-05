@@ -38,14 +38,14 @@ Example structure for auth:
 			/auth.js
 ```
 
-###config/routes.json vs routes/auth.js
+### config/routes.json vs routes/auth.js
 ---
-####config/routes.json  
+#### config/routes.json  
 - Manages global settings for the project.
 - Defines common routes used across the entire application.
 - Defines basic CRUD routes for main resources (e.g., articles, users).
 
-####routes/auth.js
+#### routes/auth.js
 - Defines routes for specific plugins or feature modules.  
 - Sets up routes related to authentication and authorization.  
 - Specifies endpoints for login, logout, registration, etc.  
@@ -53,17 +53,17 @@ Example structure for auth:
 
 For this implementation, write in routes/auth.js.
 
-####Controllers
+#### Controllers
 
 - Handle the logic for HTTP requests.
 - Can call logic created in services.
 
-####Services
+#### Services
 
 - Contain reusable business logic.
 - Include database queries or other reusable logic.
 
-#####*In backend/config/plugins.js, activate plugins and set JWT token expiration.  
+##### *In backend/config/plugins.js, activate plugins and set JWT token expiration.  
 
 config/plugins.js  
 
@@ -124,6 +124,6 @@ module.exports = {
 
 ```
   
-###Reference
+### Reference
 - [Strapi-Document](https://docs.strapi.io/dev-docs/backend-customization/controllers)
 - [SnapJournal-commit_b1ec5c2](https://github.com/Tae-uni/snapjournal/commit/b1ec5c28ff01b342d59ecf782a565fc7d7fbdca3)
