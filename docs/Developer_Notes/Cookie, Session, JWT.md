@@ -13,7 +13,6 @@
 - When a user visits a website, the cookies stored in their browser are automatically sent with HTTP requests to the server.  
 - Cookies are often used for managing user authentication and sessions.  
 
----
 ## 2. Sessions
 
 ### What Are Sessions?
@@ -23,7 +22,6 @@
 - The server stores session data, while the client stores a session ID (typically in a cookie).  
 - The session ID is sent with each request, allowing the server to retrieve user-specific data from its storage.  
 
----
 ## 3. JWT (JSON Web Token)
 
 ### What is JWT?
