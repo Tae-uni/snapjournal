@@ -11,7 +11,7 @@ export const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    req.decoded = decoded;
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(403).send("Unauthorized Token");

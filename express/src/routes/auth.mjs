@@ -3,8 +3,9 @@ import { Router } from "express";
 import { validateUserLogIn, validateUserRegistration } from "../middlewares/validationMiddleware.mjs";
 
 import { register, signIn } from "../controllers/user.mjs";
-import { sendVerificationEmailHandler } from "../controllers/email.mjs";
+import { resendVerificationEmailHandler, sendVerificationEmailHandler } from "../controllers/email.mjs";
 import { handleOAuthUser } from "../controllers/auth.mjs";
+import { authenticateToken } from "../middlewares/authenticateToken.mjs";
 
 const router = Router();
 
@@ -19,6 +20,22 @@ router.post('/auth/register', validateUserRegistration, async (req, res) => {
       return res.status(400).send("An account with this email already exist. Please log in.");
     }
     res.status(500).send({ msg: "Registration or email sending failed" });
+  }
+});
+
+router.post('/auth/resend-verification', async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    await resendVerificationEmailHandler(userId);
+    res.status(200).send({ msg: "Verification email resent successfully." });
+  } catch (err) {
+    if (err.message === "USER_NOT_FOUND") {
+      return res.status(404).send({ msg: "User not found." });
+    }
+    if (err.message === "USER_VERIFIED") {
+      return res.status(400).send({ msg: "User is already verified." });
+    }
+    res.status(500).send({ msg: "Failed to resend verification email." });
   }
 });
 
