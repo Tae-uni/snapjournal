@@ -1,11 +1,11 @@
 import { Router } from "express";
 
 import { validateUserLogIn, validateUserRegistration } from "../middlewares/validationMiddleware.mjs";
-
-import { register, signIn } from "../controllers/user.mjs";
-import { resendVerificationEmailHandler, sendVerificationEmailHandler } from "../controllers/email.mjs";
-import { handleOAuthUser } from "../controllers/auth.mjs";
 import { authenticateToken } from "../middlewares/authenticateToken.mjs";
+
+import { resendVerificationEmailHandler, sendVerificationEmailHandler } from "../controllers/email.mjs";
+import { register, signIn } from "../controllers/user.mjs";
+import { handleOAuthUser } from "../controllers/auth.mjs";
 
 const router = Router();
 
@@ -14,16 +14,16 @@ router.post('/auth/register', validateUserRegistration, async (req, res) => {
     const { email, userId } = await register(req, res);
     await sendVerificationEmailHandler(email, userId);
 
-    res.status(201).send({ msg: "Registration successful. Verification email sent." });
+    res.status(201).send({ code: "REGISTRATION_SUCCESS" });
   } catch (err) {
     if (err.message === "EMAIL_EXIST") {
-      return res.status(400).send("An account with this email already exist. Please log in.");
+      return res.status(400).send({ code: "EMAIL_EXIST" });
     }
-    res.status(500).send({ msg: "Registration or email sending failed" });
+    res.status(500).send({ code: "REGISTRATION_ERROR" });
   }
 });
 
-router.post('/auth/resend-verification', async (req, res) => {
+router.post('/auth/resend-verification', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;
     await resendVerificationEmailHandler(userId);

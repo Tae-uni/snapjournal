@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/User.mjs";
 
 import { hashPassword } from "../utils/hashUtils.mjs";
+import { generateToken } from "../utils/jwtUtils.mjs";
 
 // const checkUserExists = async (email, username) => {
 //   const existingUser = await User.findOne({
@@ -31,7 +32,8 @@ export const register = async (req, res) => {
   try {
     const existingUserEmail = await User.findOne({ email });
     if (existingUserEmail) {
-      throw new Error("EMAIL_EXIST");
+      const error = new Error("EMAIL_EXIST")
+      throw error;
     }
 
     const hashedPassword = await hashPassword(password);
@@ -46,7 +48,10 @@ export const register = async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    return { email: savedUser.email, userId: savedUser._id };
+    const registrationAccessToken = generateToken({ userId: savedUser._id }, '24h');
+    console.log("register token: ", registrationAccessToken);
+
+    return { email: savedUser.email, userId: savedUser._id, registrationAccessToken };
   } catch (err) {
     throw err;
   }

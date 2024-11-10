@@ -7,6 +7,11 @@ import { formSchema } from "@/components/utils/validationSchemas";
 
 import { SignUpFormStateT } from "./SignUpForm";
 
+interface ErrorResponseData {
+  code?: string;
+  message?: string;
+}
+
 export default async function signUpAction(
   prevState: SignUpFormStateT,
   formData: FormData
@@ -30,63 +35,39 @@ export default async function signUpAction(
 
   try {
     // Send sign-up request to Strapi API
-    const response = await axiosInstance.post(
+    const response = await axios.post(
       '/api/auth/local/register',
       {
         username, email, password
       });
 
-    console.log('Strapi Response Status:', response.status);
-    console.log('Strapi Response Data:', response.data);
-    console.log('Token:', response.data.token);
+    console.log('Response Status:', response.status);
+    console.log('Response Data:', response.data);
 
-    if (response.status === 200) {
+    if (response.status === 201) {
       return { error: false, message: 'Success!' }
     }
     return { error: true, message: 'Error during registration process' };
 
   } catch (error) {
-    return handleAxiosError(error as AxiosError);
+    if (axios.isAxiosError(error) && error.response) {
+      const responseData = error.response.data as ErrorResponseData; // Type assertion
+      const errorCode = responseData.code;
+
+      if (errorCode) {
+        switch (errorCode) {
+          case "EMAIL_EXIST":
+            return { error: true, message: 'An account with this email already exists.' };
+          case "REGISTRATION_ERROR":
+            return { error: true, message: 'Registration failed. Please try again later.' };
+          default:
+            return { error: true, message: 'An unknown error occurred. Please try again later.' };
+        }
+      }
+    }
+    return {
+      error: true,
+      message: (error as Error).message || 'An unknown error occurred.',
+    }
   }
 };
-
-// Handle Strapi response and extract error messages
-function handleStrapiResponse(response: AxiosResponse): SignUpFormStateT | null {
-  if (response.status !== 200) {
-    return extractErrorMessage(response.data);
-  }
-  return null;
-}
-
-// Handle Axios errors and extract error messages
-function handleAxiosError(error: AxiosError): SignUpFormStateT {
-  if (error.response) {
-    return extractErrorMessage(error.response.data);
-  }
-  return {
-    error: true,
-    message: error.message,
-  };
-}
-
-function extractErrorMessage(data: any): SignUpFormStateT {
-  const result = {
-    error: true,
-    message: '',
-  };
-
-  if (data && data.error) {
-    const errorMessage = data.error.message;
-    if (errorMessage.includes('email')) {
-      result.message = 'Email already exists.';
-    } else if (errorMessage.includes('username')) {
-      result.message = 'Email or Username are already exists.';
-    } else {
-      result.message = errorMessage;
-    }
-  } else {
-    result.message = 'An unknown error occurred.';
-  }
-
-  return result;
-}
