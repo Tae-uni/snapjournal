@@ -24,6 +24,7 @@ export type SignUpFormStateT = {
   error: boolean;
   message: string;
   inputErrors?: InputErrorsT;
+  registrationAccessToken?: string;
 };
 
 export default function SignUpForm() {

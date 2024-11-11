@@ -10,9 +10,9 @@ const httpsAgent: https.Agent = new https.Agent({
 });
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_STRAPI_URL || 'https://localhost:1337',
+  baseURL: process.env.EXPRESS_URL || 'https://localhost:5004',
   httpsAgent,
-  // withCredentials: true,
+  withCredentials: true,
 });
 
 const localAxiosInstance: AxiosInstance = axios.create({

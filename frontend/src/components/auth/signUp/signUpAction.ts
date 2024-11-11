@@ -1,6 +1,6 @@
 "use server";
 
-import axios, { AxiosResponse, AxiosError } from "axios";
+import axios from "axios";
 
 import { axiosInstance } from "@/lib/axiosInstance";
 import { formSchema } from "@/components/utils/validationSchemas";
@@ -35,8 +35,8 @@ export default async function signUpAction(
 
   try {
     // Send sign-up request to Strapi API
-    const response = await axios.post(
-      '/api/auth/local/register',
+    const response = await axiosInstance.post(
+      '/api/auth/register',
       {
         username, email, password
       });
@@ -45,7 +45,15 @@ export default async function signUpAction(
     console.log('Response Data:', response.data);
 
     if (response.status === 201) {
-      return { error: false, message: 'Success!' }
+      const { registrationAccessToken } = response.data;
+      // if (registrationAccessToken) {
+      //   sessionStorage.setItem('accessToken', registrationAccessToken);
+      //   console.log('Access token stored in session storage: ', registrationAccessToken);
+      // }
+
+      return {
+        error: false, message: 'Success!', registrationAccessToken,
+      };
     }
     return { error: true, message: 'Error during registration process' };
 

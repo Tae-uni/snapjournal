@@ -11,10 +11,13 @@ const router = Router();
 
 router.post('/auth/register', validateUserRegistration, async (req, res) => {
   try {
-    const { email, userId } = await register(req, res);
+    const { email, userId, registrationAccessToken } = await register(req, res);
     await sendVerificationEmailHandler(email, userId);
 
-    res.status(201).send({ code: "REGISTRATION_SUCCESS" });
+    res.status(201).send({
+      code: "REGISTRATION_SUCCESS",
+      registrationAccessToken,
+    });
   } catch (err) {
     if (err.message === "EMAIL_EXIST") {
       return res.status(400).send({ code: "EMAIL_EXIST" });
