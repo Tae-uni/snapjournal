@@ -4,7 +4,7 @@ export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.status(401).send("No Token");
+    res.status(401).send("Access denied. No token");
   }
 
   const token = req.headers.authorization.split(' ')[1];

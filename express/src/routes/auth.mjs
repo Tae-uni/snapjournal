@@ -26,6 +26,10 @@ router.post('/auth/register', validateUserRegistration, async (req, res) => {
   }
 });
 
+router.get('/confirmation/message', authenticateToken, async (req, res) => {
+  res.status(200).send({ msg: "Grantee" });
+})
+
 router.post('/auth/resend-verification', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId;

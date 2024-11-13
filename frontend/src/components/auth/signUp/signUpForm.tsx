@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,10 @@ import { formSchema } from "@/components/utils/validationSchemas";
 
 import signUpAction from "./signUpAction";
 
-// In this project(signUpAction): In case of success, it won't return but redirect.
+interface TokenPayload {
+  exp: number;
+  userId: string;
+}
 
 type InputErrorsT = {
   username?: string[];
@@ -72,12 +76,15 @@ export default function SignUpForm() {
       const result = await signUpAction(formState, formData);
       setFormState(result);
 
-      if (result.error && result.inputErrors) {
-        setInputErrors(result.inputErrors);
-      } else {
-        // Ensure successfully set the session cookie before redirecting
-        if (result.message === 'Success!') {
+      if (!result.error && result.registrationAccessToken) {
+        sessionStorage.setItem("regAccessToken", result.registrationAccessToken);
+        // Check token validity before redirecting.
+        if (isTokenValid(result.registrationAccessToken)) {
           router.push('/confirmation/message');
+        } else {
+          // If the token is invalid, remove it from session with error.
+          setFormState({ error: true, message: "Token expired. Please request a new verification email. " });
+          sessionStorage.removeItem("regAccessToken");
         }
       }
     } catch (error) {
@@ -88,6 +95,17 @@ export default function SignUpForm() {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Check token validity
+  const isTokenValid = (token: string) => {
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp > currentTime;
+    } catch (error) {
+      return false;
     }
   };
 
