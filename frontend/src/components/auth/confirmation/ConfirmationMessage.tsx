@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { jwtDecode } from 'jwt-decode';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { resendAction } from './confirmationMessageAction';
-import { useRouter } from 'next/navigation';
-import { jwtDecode } from 'jwt-decode';
 
 interface TokenPayLoad {
   exp: number;
@@ -16,6 +16,7 @@ interface TokenPayLoad {
 
 export default function ConfirmationMessage() {
   const [emailSent, setEmailSent] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,6 +36,8 @@ export default function ConfirmationMessage() {
           console.error("Token has expired. Redirecting to error page.");
           sessionStorage.removeItem("regAccessToken");
           router.push('/confirmation/error');
+        } else {
+          setLoading(false);
         }
       }
     } catch (error) {
@@ -51,6 +54,8 @@ export default function ConfirmationMessage() {
       router.push('confirmation/error');
       return;
     }
+
+    setEmailSent(true);
 
     try {
       if (registrationAccessToken) {
@@ -78,6 +83,11 @@ export default function ConfirmationMessage() {
       console.error('An error occurred:', error);
     }
   };
+
+  // Todo: Enhance loading message...
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">

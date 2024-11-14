@@ -6,26 +6,6 @@ import { User } from "../models/User.mjs";
 import { hashPassword } from "../utils/hashUtils.mjs";
 import { generateToken } from "../utils/jwtUtils.mjs";
 
-// const checkUserExists = async (email, username) => {
-//   const existingUser = await User.findOne({
-//     $or: [{ email }, { username }],
-//   });
-
-//   if (!existingUser) return;
-
-//   if (existingUser.email === email) {
-//     if (existingUser.provider && !existingUser.password) {
-//       throw new Error("EMAIL_EXIST");
-//     }
-//     // Local account
-//     throw new Error("EMAIL_EXIST");
-//   }
-
-//   if (existingUser.username === username) {
-//     throw new Error("USERNAME_EXIST");
-//   }
-// };
-
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
 

@@ -5,7 +5,7 @@ import { axiosInstance } from "@/lib/axiosInstance";
 export async function resendAction(registrationAccessToken: string): Promise<{ success: boolean; message?: string }> {
   try {
 
-    const response = await axiosInstance.post('/api/auth/resend-confirmation',
+    const response = await axiosInstance.post('/api/auth/resend-verification',
       {},
       {
         headers: {
