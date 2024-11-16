@@ -2,30 +2,42 @@
 
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function VerifyEmailMessage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (token) {
-      axios.get(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local/verify?token=${token}`)
-      .then((response) => {
-        console.log('Email verified successfully', response.data);
-        router.push('/confirmation/success');
-      })
-      .catch((error) => {
-        console.error('Error verifying email', error.response.data);
-        router.push('/confirmation/error');
-      });
+      axios.get(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/verify-email?token=${token}`)
+        .then((response) => {
+          const { code } = response.data;
+          switch (code) {
+            case "VERIFICATION_SUCCESS":
+              // setMessage("Email verified successfully");
+              console.log('Email verified successfully', response.data);
+              router.push('/confirmation/success');
+              break;
+            case "USER_VERIFIED":
+              router.push('/confirmation/already-verified');
+              break;
+            default:
+              router.push('/confirmation/error');
+          }
+        })
+        .catch((error) => {
+          console.error('Error verifying email', error.response.data);
+          router.push('/confirmation/error');
+        });
     }
-  }, [token]);
+  }, [token, router]);
 
   return (
     <div>
-      <h1>Verifying your email...</h1>
+      <h1>{message || "Verifying your email..."}</h1>
     </div>
   );
 }
