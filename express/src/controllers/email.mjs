@@ -50,7 +50,6 @@ export const verifyEmail = async (req, res) => {
     }
 
     if (user.isVerified) {
-      // return res.status(200).send({ code: "ALREADY_VERIFIED" });
       throw new Error("USER_VERIFIED");
     }
 
@@ -59,14 +58,13 @@ export const verifyEmail = async (req, res) => {
     }
 
     user.isVerified = true;
-    delete user.emailVerificationToken;
-    delete user.emailVerificationExpires;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
     await user.save();
 
     return res.status(200).send({ code: "VERIFICATION_SUCCESS" });
   } catch (err) {
     console.error("Verification error: ", err);
-    // return res.status(400).send({ msg: "Invalid or expired token" });
     throw err;
   }
 };

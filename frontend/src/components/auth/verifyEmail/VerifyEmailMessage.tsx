@@ -8,7 +8,6 @@ export default function VerifyEmailMessage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (token) {
@@ -17,7 +16,6 @@ export default function VerifyEmailMessage() {
           const { code } = response.data;
           switch (code) {
             case "VERIFICATION_SUCCESS":
-              // setMessage("Email verified successfully");
               console.log('Email verified successfully', response.data);
               router.push('/confirmation/success');
               break;
@@ -26,18 +24,29 @@ export default function VerifyEmailMessage() {
               break;
             default:
               router.push('/confirmation/error');
+              break;
           }
         })
         .catch((error) => {
+          const code = error.response?.data?.code;
+          if (code === "USER_NOT_FOUND") {
+            router.push('/confirmation/error?reason=user-not-found');
+          } else if (code === "TOKEN_EXPIRED") {
+            router.push('/confirmation/error?reason=token-expired');
+          } else {
+            router.push('/confirmation/error?reason=unknown');
+          }
           console.error('Error verifying email', error.response.data);
           router.push('/confirmation/error');
         });
+    } else {
+      router.push('/confirmation/error?reason=no-token');
     }
   }, [token, router]);
 
   return (
     <div>
-      <h1>{message || "Verifying your email..."}</h1>
+      <h1>Verifying your email...</h1>
     </div>
   );
 }

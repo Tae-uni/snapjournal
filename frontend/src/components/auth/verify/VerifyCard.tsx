@@ -7,7 +7,7 @@ import { jwtDecode } from 'jwt-decode';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { resendAction } from './confirmationMessageAction';
+import { resendAction } from './verifyCardAction';
 
 interface TokenPayLoad {
   exp: number;

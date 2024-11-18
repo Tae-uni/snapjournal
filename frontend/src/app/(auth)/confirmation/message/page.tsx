@@ -1,4 +1,4 @@
-import ConfirmationMessage from "@/components/auth/confirmation/ConfirmationMessage";
+import ConfirmationMessage from "@/components/auth/verify/VerifyCard";
 
 export default function ConfirmationMessagePage() {
   return <ConfirmationMessage />;
