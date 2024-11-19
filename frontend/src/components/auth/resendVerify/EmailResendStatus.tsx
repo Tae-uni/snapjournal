@@ -1,4 +1,5 @@
 "use client";
+// Resend Page
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,14 +8,14 @@ import { jwtDecode } from 'jwt-decode';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { resendAction } from './verifyCardAction';
+import { resendAction } from './emailResendStatusAction';
 
 interface TokenPayLoad {
   exp: number;
   userId: string;
 }
 
-export default function ConfirmationMessage() {
+export default function EmailResendStatus() {
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

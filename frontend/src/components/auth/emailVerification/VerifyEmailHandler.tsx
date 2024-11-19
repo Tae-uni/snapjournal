@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function VerifyEmailMessage() {
+export default function VerifyEmailHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');

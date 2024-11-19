@@ -1,5 +1,5 @@
-import VerifyEmailMessage from "@/components/auth/verifyEmail/VerifyEmailMessage";
+import VerifyEmailHandler from "@/components/auth/emailVerification/VerifyEmailHandler";
 
 export default function VerifyEmailPage() {
-  return <VerifyEmailMessage />
+  return <VerifyEmailHandler />
 }
