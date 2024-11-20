@@ -72,19 +72,6 @@ router.post('/auth/login', validateUserLogIn, async (req, res) => {
   }
 });
 
-router.get('/auth/verify-email', async (req, res) => {
-  try {
-    await verifyEmail(req, res);
-  } catch (err) {
-    if (err.message === "USER_NOT_FOUND") {
-      return res.status(404).send({ code: "USER_NOT_FOUND" });
-    } else if (err.message === "USER_VERIFIED") {
-      return res.status(200).send({ code: "USER_VERIFIED" });
-    } else if (err.message === "TOKEN_EXPIRED") {
-      return res.status(400).send({ code: "TOKEN_EXPIRED" });
-    }
-    return res.status(500).send({ code: "VERIFICATION_ERROR" });
-  }
-});
+router.get('/auth/verify-email', verifyEmail);
 
 export default router;

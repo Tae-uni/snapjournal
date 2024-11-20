@@ -41,20 +41,24 @@ export const resendVerificationEmailHandler = async (userId) => {
 
 export const verifyEmail = async (req, res) => {
   const { token } = req.query;
+  if (!token) {
+    return res.redirect('/verify/user-not-found');
+  }
+
   try {
     const decoded = verifyToken(token);
     const user = await User.findById(decoded.userId);
 
     if (!user) {
-      throw new Error("USER_NOT_FOUND");
+      return res.redirect('/verify/user-not-found');
     }
 
     if (user.isVerified) {
-      throw new Error("USER_VERIFIED");
+      return res.redirect('/verify/already-verified');
     }
 
     if (user.emailVerificationExpires && user.emailVerificationExpires < Date.now()) {
-      throw new Error("TOKEN_EXPIRED");
+      return res.redirect('/verify/token-expired');
     }
 
     user.isVerified = true;
@@ -62,9 +66,9 @@ export const verifyEmail = async (req, res) => {
     user.emailVerificationExpires = null;
     await user.save();
 
-    return res.status(200).send({ code: "VERIFICATION_SUCCESS" });
+    return res.redirect('/verify/success');
   } catch (err) {
     console.error("Verification error: ", err);
-    throw err;
+    return res.redirect('/verify/error');
   }
 };
