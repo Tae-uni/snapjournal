@@ -15,7 +15,7 @@ export default function AlreadyVerifiedPage() {
       title="Email Already Verified"
       description="This email is already verified. Please log in."
       btnText="Go to Sign In"
-      imgSrc="/images/warning.png"
+      imgSrc="/images/already_verified.png"
       onBtnClick={handleVerifiedClick}
     />
   );

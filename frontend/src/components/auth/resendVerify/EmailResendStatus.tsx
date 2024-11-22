@@ -25,7 +25,7 @@ export default function EmailResendStatus() {
 
     if (!registrationAccessToken) {
       console.error("Please try register again.");
-      router.push('/confirmation/error');
+      router.push('/verify/error');
       return;
     }
 
@@ -36,7 +36,7 @@ export default function EmailResendStatus() {
         if (decoded.exp < currentTime) {
           console.error("Token has expired. Redirecting to error page.");
           sessionStorage.removeItem("regAccessToken");
-          router.push('/confirmation/error');
+          router.push('/verify/token-expired');
         } else {
           setLoading(false);
         }
@@ -65,7 +65,7 @@ export default function EmailResendStatus() {
         if (decoded.exp < currentTime) {
           console.error("Token has expired. Redirecting to error page.");
           sessionStorage.removeItem("regAccessToken");
-          router.push('/confirmation/error');
+          router.push('/verify/token-expired');
         }
       }
     } catch (error) {

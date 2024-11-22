@@ -15,7 +15,7 @@ export default function UserNotFoundPage() {
       title="User Not Found"
       description="We couldn't find your account. Please register to continue."
       btnText="Go to Sign Up"
-      imgSrc="/images/warning.png"
+      imgSrc="/images/user_not_found.png"
       onBtnClick={handleRegClick}
     />
   );

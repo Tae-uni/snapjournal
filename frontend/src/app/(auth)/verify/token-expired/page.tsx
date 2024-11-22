@@ -15,7 +15,7 @@ export default function TokenExpiredPage() {
       title="Link Expired"
       description="This verification link has expired. Please request a new one."
       btnText="Request Email"
-      imgSrc="/images/warning.png"
+      imgSrc="/images/token_expired.png"
       onBtnClick={handleResendClick}
     />
   );
