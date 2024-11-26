@@ -43,7 +43,7 @@ export default function EmailResendStatus() {
       }
     } catch (error) {
       console.error("Invalid token.")
-      router.push('confirmation/error');
+      router.push('verify/error');
     }
   }, [router]);
 
@@ -52,7 +52,7 @@ export default function EmailResendStatus() {
 
     if (!registrationAccessToken) {
       console.error();
-      router.push('confirmation/error');
+      router.push('verify/error');
       return;
     }
 
@@ -70,7 +70,7 @@ export default function EmailResendStatus() {
       }
     } catch (error) {
       console.error("Invalid token.")
-      router.push('confirmation/error');
+      router.push('verify/error');
     }
 
     try {

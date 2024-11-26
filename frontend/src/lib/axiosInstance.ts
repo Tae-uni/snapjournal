@@ -10,7 +10,7 @@ const httpsAgent: https.Agent = new https.Agent({
 });
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.EXPRESS_URL || 'https://localhost:5004',
+  baseURL: process.env.NEXT_PUBLIC_EXPRESS_URL || 'https://localhost:5004',
   httpsAgent,
   withCredentials: true,
 });

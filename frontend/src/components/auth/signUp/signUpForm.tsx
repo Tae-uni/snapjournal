@@ -80,7 +80,7 @@ export default function SignUpForm() {
         sessionStorage.setItem("regAccessToken", result.registrationAccessToken);
         // Check token validity before redirecting.
         if (isTokenValid(result.registrationAccessToken)) {
-          router.push('/confirmation/message');
+          router.push('/verify/message');
         } else {
           // If the token is invalid, remove it from session with error.
           setFormState({ error: true, message: "Token expired. Please request a new verification email. " });
