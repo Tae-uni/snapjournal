@@ -16,7 +16,7 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 const localAxiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXTAUTH_URL || 'https://localhost:3000',
+  baseURL: process.env.NEXT_PUBLIC_NEXT_URL || 'https://localhost:3000',
   httpsAgent,
   withCredentials: true,
 });

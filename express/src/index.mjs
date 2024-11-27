@@ -1,6 +1,7 @@
 import express from "express";
 import routes from "./routes/index.mjs";
 import mongoose from "mongoose";
+import cors from "cors";
 
 const app = express();
 
@@ -10,6 +11,13 @@ mongoose
   .catch((err) => console.log(`Error: ${err}`));
 
 app.use(express.json());
+
+// CORS setting
+app.use(cors({
+  origin: "https://localhost:3000",
+  credential: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+}));
 
 app.use('/api', routes);
 

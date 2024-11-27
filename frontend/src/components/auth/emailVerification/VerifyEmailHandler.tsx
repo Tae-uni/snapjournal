@@ -2,18 +2,27 @@
 
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function VerifyEmailHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
+  const isRequestSent = useRef(false);
+
   useEffect(() => {
-    if (token) {
+    if (!token) {
+      router.push('/verify/user-not-found');
+    }
+
+    if (!isRequestSent.current) {
+      isRequestSent.current = true;
+
       axios
       .get(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/verify-email?token=${token}`)
       .then((response) => {
+        console.log("Response Data:", response)
         const { code } = response.data;
         switch (code) {
           case "VERIFICATION_SUCCESS":
@@ -35,10 +44,7 @@ export default function VerifyEmailHandler() {
       })
       .catch(() => {
         router.push('verify/error');
-      })
-      // axios.get(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/verify-email?token=${token}`)
-    } else {
-      router.push('/verify/user-not-found');
+      });
     }
   }, [token, router]);
 
