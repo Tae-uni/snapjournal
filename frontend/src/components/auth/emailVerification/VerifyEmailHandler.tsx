@@ -12,6 +12,8 @@ export default function VerifyEmailHandler() {
   const isRequestSent = useRef(false);
 
   useEffect(() => {
+    // In Next.js Strict Mode, this effect runs twice in dev mode.
+    // This is expected behavior to help identify potential side effects.
     if (!token) {
       router.push('/verify/user-not-found');
     }
@@ -49,8 +51,10 @@ export default function VerifyEmailHandler() {
   }, [token, router]);
 
   return (
-    <div>
-      <h1>Verifying your email...</h1>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"></div>
+      </div>
     </div>
   );
 }
