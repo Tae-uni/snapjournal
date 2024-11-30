@@ -18,12 +18,12 @@ export const authOptions: NextAuthOptions = {
         identifier: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials || !credentials.identifier || !credentials.password) {
           return null;
         }
         try {
-          const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`, {
+          const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/local`, {
             identifier: credentials.identifier,
             password: credentials.password,
           }, {
