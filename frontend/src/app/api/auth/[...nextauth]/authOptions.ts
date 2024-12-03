@@ -3,8 +3,6 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
-import { StrapiErrorT } from '@/types/strapi/StrapiError';
-import { StrapiLoginResponseT } from '@/types/strapi/User';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,16 +13,17 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'email and password',
       credentials: {
-        identifier: { label: 'Email', type: 'text' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials || !credentials.identifier || !credentials.password) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
+
         try {
-          const strapiResponse = await axios.post(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/local`, {
-            identifier: credentials.identifier,
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/signin`, {
+            email: credentials.email,
             password: credentials.password,
           }, {
             headers: {
@@ -32,28 +31,21 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          if (strapiResponse.status !== 200) {
+          const data = response.data
+
+          if (response.status !== 200 || data.token) {
             // return error to signIn callback
-            const contentType = strapiResponse.headers['content-type'];
-            if (contentType && contentType.includes('application/json')) {
-              const data: StrapiErrorT = await strapiResponse.data;
-              throw new Error(data.error.message);
-            } else {
-              throw new Error(strapiResponse.statusText);
-            }
+            throw new Error('Invalid login credentials');
           }
 
           // Success
-          const data: StrapiLoginResponseT = await strapiResponse.data;
           return {
+            id: data.user.id,
             name: data.user.username,
             email: data.user.email,
-            id: data.user.id.toString(), // Originally, the user id is 'number'
-            strapiUserId: data.user.id,
+            token: data.token,
             blocked: data.user.blocked,
-            strapiToken: data.jwt,
           };
-
         } catch (error) {
           throw error;
         }
@@ -61,84 +53,70 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ account, profile }) {
       if (
         account &&
         account.provider === 'google' &&
         profile && 'email_verified' in profile
       ) {
         if (!profile.email_verified) return false;
-
-    }
+      }
       return true;
-  },
+    },
 
-  async jwt({ token, trigger, account, user, session }) {
-    console.log('jwt callback', {
-      token,
-      trigger,
-      account,
-      user,
-      session,
-    });
+    async jwt({ token, account, user }) {
+      console.log('jwt callback', {
+        token,
+        user,
+      });
 
-    if (account) {
-      if (account.provider === 'google') {
+      // Credential SignIn
+      if (account?.provider === 'credentials' && user) {
+        token.accessToken = user.token;
+        token.userId = user.id;
+        token.blocked = user.blocked;
+      }
+
+      // Google account
+      if (account?.provider === 'google' && account.access_token) {
         try {
-          const strapiResponse = await axios.get(
-            `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/${account.provider}/callback`,
-            {
-              params: {
-                access_token: account.access_token,
-              },
-              headers: {
-                'Content-Type': 'no-cache',
-              }
-            }
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/google`,
+            { access_token: account.access_token },
+            { headers: { 'Content-Type': 'application/json' } }
           );
-          if (strapiResponse.status !== 200) {
-            const strapiError: StrapiErrorT = strapiResponse.data;
-            throw new Error(strapiError.error.message);
-          }
 
-          const strapiLoginResponse: StrapiLoginResponseT = strapiResponse.data;
-            token.strapiToken = strapiLoginResponse.jwt;
-            token.strapiUserId = strapiLoginResponse.user.id;
-            token.provider = account.provider;
-            token.blocked = strapiLoginResponse.user.blocked;
+          const data = response.data;
+
+          if (response.status == 200) {
+            token.accessToken = data.token;
+            token.userId = data.user.id;
+            token.blocked = data.user.blocked;
+          }
         } catch (error) {
           console.error('Error fetching Strapi JWT token:', error);
         }
       }
+      return token;
+    },
 
+    async session({ token, session }) {
+      console.log('session callback', {
+        token,
+        session,
+      });
 
-      if (account.provider === 'credentials') {
-        token.strapiToken = user.strapiToken;
-        token.strapiUserId = user.strapiUserId;
-        token.provider = account.provider;
-        token.blocked = user.blocked;
-      }
-    }
-    return token;
+      session.accessToken = token.accessToken;
+      session.provider = token.provider;
+      session.userId = token.userId;
+      session.blocked = token.blocked;
+
+      return session;
+    },
   },
-  async session({ token, session }) {
-    console.log('session callback', {
-      token,
-      session,
-    });
-
-    session.strapiToken = token.strapiToken;
-    session.provider = token.provider;
-    session.user.strapiUserId = token.strapiUserId;
-    session.user.blocked = token.blocked;
-
-    return session;
-  },
-},
   session: {
     strategy: 'jwt',
   },
-  secret: process.env.NEXTAUTH_SECRET,
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
   },
@@ -149,4 +127,5 @@ export const authOptions: NextAuthOptions = {
     // verifyRequest: '/api/auth/verify-request',
     // newUser: undefined,
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };

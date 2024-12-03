@@ -1,11 +1,11 @@
 "use server";
 
-import axiosInstance from "@/lib/axiosInstance";
+import { axiosInstance } from "@/lib/axiosInstance";
 
-export default async function signInAction(identifier: string, password: string) {
+export default async function signInAction(email: string, password: string) {
   try {
-    const response = await axiosInstance.post('/api/auth/local', {
-      identifier,
+    const response = await axiosInstance.post('/api/auth/signin', {
+      email,
       password,
       redirect: false,
     });
@@ -19,12 +19,11 @@ export default async function signInAction(identifier: string, password: string)
     return {
       ok: true,
       data: {
+        id: data.user.id,
         name: data.user.username,
         email: data.user.email,
-        id: data.user.id.toString(),
-        strapiUserId: data.user.id,
+        token: data.token,
         blocked: data.user.blocked,
-        strapiToken: data.jwt,
       }
     };
     // ('credentials', {

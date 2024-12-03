@@ -1,26 +1,26 @@
 import { DefaultSession } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import { StrapiUserT } from "../strapi/User";
 
 declare module 'next-auth' {
   interface Session {
-    strapiToken?: string;
+    accessToken?: string;
     provider?: 'credentials' | 'google';
-    user: User;
+    userId?: string;
+    blocked?: boolean
   }
 
   interface User extends DefaultSession['user'] {
-    strapiUserId?: number;
-    strapiToken?: string;
+    userId?: string;
+    token?: string;
     blocked?: boolean;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    strapiUserId?: number;
+    userId?: string;
     blocked?: boolean;
-    strapiToken?: string;
+    accessToken?: string;
     provider?: 'credentials' | 'google';
   }
 }

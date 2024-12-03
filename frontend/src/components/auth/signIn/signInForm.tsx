@@ -14,18 +14,18 @@ import { Button } from "@/components//ui/button"
 import signInAction from "./signInAction";
 
 type FormErrorT = {
-  identifier?: undefined | string[];
-  password?: undefined | string[];
-  strapiError?: string;
+  email?: string[];
+  password?: string[];
+  serverError?: string;
 };
 
 const initialState = {
-  identifier: '',
+  email: '',
   password: '',
 };
 
 const formSchema = z.object({
-  identifier: z.string().min(2).max(30),
+  email: z.string().email("Invalid email format"),
   password: z
     .string().min(6, { message: 'at least 6 characters long.' })
     .max(30),
@@ -50,25 +50,23 @@ export function SignInForm() {
     e.preventDefault();
     setLoading(true);
 
+    // Form validation
     const validatedFields = formSchema.safeParse(data);
-
     if (!validatedFields.success) {
       setErrors(validatedFields.error.formErrors.fieldErrors);
       setLoading(false);
-    } else {
-      // if validatedFields...
-      const signInResponse = await signInAction(data.identifier, data.password);
-      if (signInResponse && !signInResponse?.ok) {
-        setErrors({
-          strapiError: 'Invalid ID or Password',
-        });
-        setLoading(false);
-      } else {
-        // handle success
-        router.push(callbackUrl);
-        router.refresh();
-      }
+      return;
     }
+
+    // if validatedFields...
+    const signInResponse = await signInAction(data.email, data.password);
+      setLoading(false);
+    } else {
+      // handle success
+      router.push(callbackUrl);
+      router.refresh();
+    }
+
   }
 
   return (
@@ -149,7 +147,7 @@ export function SignInForm() {
             </CardFooter>
           </Card>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?
+            Don&apos;t have an account?
             <Link className="underline ml-2" href="/signup">
               Sign Up
             </Link>

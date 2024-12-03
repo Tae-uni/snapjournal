@@ -60,7 +60,7 @@ router.post('/auth/oauth', async (req, res) => {
   }
 });
 
-router.post('/auth/login', validateUserLogIn, async (req, res) => {
+router.post('/auth/signin', validateUserLogIn, async (req, res) => {
   try {
     const result = await signIn(req, res);
     res.status(200).send(result);
