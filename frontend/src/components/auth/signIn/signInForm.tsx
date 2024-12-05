@@ -13,11 +13,11 @@ import { Button } from "@/components//ui/button"
 
 import signInAction from "./signInAction";
 
-type FormErrorT = {
-  email?: string[];
-  password?: string[];
-  serverError?: string;
-};
+// type FormErrorT = {
+//   email?: string[];
+//   password?: string[];
+//   serverError?: string;
+// };
 
 const initialState = {
   email: '',
@@ -34,39 +34,61 @@ const formSchema = z.object({
 export function SignInForm() {
   const [data, setData] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<FormErrorT>({});
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   const router = useRouter();
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
-  }
+  // function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  //   setData({
+  //     ...data,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // }
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+    // setErrors({ ...errors, [e.target]})
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     // Form validation
     const validatedFields = formSchema.safeParse(data);
     if (!validatedFields.success) {
-      setErrors(validatedFields.error.formErrors.fieldErrors);
+      const fieldErrors = validatedFields.error.formErrors.fieldErrors;
+      setErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      });
       setLoading(false);
       return;
     }
 
-    // if validatedFields...
-    const signInResponse = await signInAction(data.email, data.password);
+    // Call signInAction
+    const actionResult = await signInAction(data.email, data.password);
+
+    if (!actionResult.ok) {
+      setErrors({ serverError: actionResult.error });
       setLoading(false);
-    } else {
-      // handle success
-      router.push(callbackUrl);
-      router.refresh();
+      return;
     }
 
+    // Call NextAuth signIn
+    const result = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setErrors({ serverError: result.error });
+    } else {
+      router.push("/dashboard");
+    }
+    setLoading(false);
   }
 
   return (
@@ -82,19 +104,19 @@ export function SignInForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="identifier">Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="identifier"
-                  name="identifier"
+                  id="email"
+                  name="email"
                   type="email"
-                  placeholder="Put the email"
-                  value={data.identifier}
+                  placeholder="Enter your email"
+                  value={data.email}
                   required
                   onChange={handleChange}
                 />
-                {errors?.identifier && (
+                {errors?.email && (
                   <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
-                    {errors.identifier[0]}
+                    {errors.email}
                   </div>
                 )}
               </div>
