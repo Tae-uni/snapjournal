@@ -46,11 +46,16 @@ export const signIn = async (req, res) => {
       throw new Error('INVALID_USER');
     }
 
+    if (user.blocked) {
+      throw new Error('USER_BLOCKED');
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       throw new Error('INVALID_USER');
     }
     return { msg: "Login Successful" };
+
   } catch (err) {
     console.log("Sign-in error:", err);
     throw err;

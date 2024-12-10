@@ -16,6 +16,19 @@ const userSchema = new mongoose.Schema({
       return !this.provider;
     },
   },
+  blocked: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  blockReason: {
+    type: String,
+    default: null,
+  },
+  blockedAt: {
+    type: Date,
+    default: null,
+  },
   /* For SNS LogIn */
   provider: {
     type: String,
@@ -36,6 +49,16 @@ const userSchema = new mongoose.Schema({
   emailVerificationExpires: {
     type: Date,
   },
+});
+
+userSchema.pre('save', function (next) {
+  if (this.isModified('blocked') && this.blocked) {
+    this.blockedAt = new Date();
+    if (!this.blockReason) {
+      this.blockReason = "No reason provided";
+    }
+  }
+  next();
 });
 
 export const User = mongoose.model('User', userSchema);

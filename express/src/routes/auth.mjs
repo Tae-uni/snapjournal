@@ -68,6 +68,9 @@ router.post('/auth/signin', validateUserLogIn, async (req, res) => {
     if (err.message === 'INVALID_USER') {
       return res.status(400).send({ msg: "Invalid email or password" });
     }
+    if (err.message === 'USER_BLOCKED') {
+      return res.status(403).send({ msg: "Your account is blocked. Please contact support." });
+    }
     res.status(500).send({ msg: "Login failed" });
   }
 });
