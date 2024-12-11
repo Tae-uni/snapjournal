@@ -11,14 +11,6 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
 
-import signInAction from "./signInAction";
-
-// type FormErrorT = {
-//   email?: string[];
-//   password?: string[];
-//   serverError?: string;
-// };
-
 const initialState = {
   email: '',
   password: '',
@@ -39,13 +31,6 @@ export function SignInForm() {
   const callbackUrl = searchParams.get('callbackUrl') || '/';
   const router = useRouter();
 
-  // function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-  //   setData({
-  //     ...data,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // }
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
     // setErrors({ ...errors, [e.target]})
@@ -62,16 +47,8 @@ export function SignInForm() {
       setErrors({
         email: fieldErrors.email?.[0],
         password: fieldErrors.password?.[0],
+        serverError: undefined,
       });
-      setLoading(false);
-      return;
-    }
-
-    // Call signInAction
-    const actionResult = await signInAction(data.email, data.password);
-
-    if (!actionResult.ok) {
-      setErrors({ serverError: actionResult.error });
       setLoading(false);
       return;
     }
@@ -85,6 +62,8 @@ export function SignInForm() {
 
     if (result?.error) {
       setErrors({ serverError: result.error });
+      console.log("Error1:", result?.error);
+      console.log("Error:", setErrors);
     } else {
       router.push("/dashboard");
     }
@@ -137,6 +116,11 @@ export function SignInForm() {
                   </div>
                 )}
               </div>
+              {errors.serverError && (
+                <div className="text-center text-red-500 text-sm">
+                  {errors.serverError}
+                </div>
+              )}
             </CardContent>
             <CardFooter className="flex flex-col">
               <Button
@@ -147,16 +131,6 @@ export function SignInForm() {
               >
                 Sign In
               </Button>
-              {errors.password || errors.identifier ? (
-                <p className="mt-4 text-center text-red-500 text-sm">
-                  Please check your data.
-                </p>
-              ) : null}
-              {errors.strapiError ? (
-                <p className="mt-4 text-center text-red-500 text-sm">
-                  {errors.strapiError}
-                </p>
-              ) : null}
               <Button
                 className="bg-white border border-zinc-300 rounded-md w-full text-zinc-700 hover:bg-gray-100"
                 onClick={() => signIn('google', { callbackUrl: callbackUrl })}

@@ -63,10 +63,10 @@ router.post('/auth/oauth', async (req, res) => {
 router.post('/auth/signin', validateUserLogIn, async (req, res) => {
   try {
     const result = await signIn(req, res);
-    res.status(200).send(result);
+    res.status(200).json(result);
   } catch (err) {
     if (err.message === 'INVALID_USER') {
-      return res.status(400).send({ msg: "Invalid email or password" });
+      return res.status(400).send({ msg: "The email or password you entered is incorrect. Please try again." });
     }
     if (err.message === 'USER_BLOCKED') {
       return res.status(403).send({ msg: "Your account is blocked. Please contact support." });

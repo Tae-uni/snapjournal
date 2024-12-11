@@ -1,3 +1,4 @@
+import { axiosInstance } from '@/lib/axiosInstance';
 import axios from 'axios';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -18,11 +19,11 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error('Email and password are required.')
         }
 
         try {
-          const response = await axios.post(`${process.env.NEXT_PUBLIC_EXPRESS_URL}/api/auth/signin`, {
+          const response = await axiosInstance.post(`/api/auth/signin`, {
             email: credentials.email,
             password: credentials.password,
           }, {
@@ -31,23 +32,27 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          const data = response.data
-
-          if (response.status !== 200 || data.token) {
+          if (response.status !== 200) {
             // return error to signIn callback
-            throw new Error('Invalid login credentials');
+            throw new Error(response.data.error || 'Invalid login credentials');
           }
+
+          const data = response.data
 
           // Success
           return {
             id: data.user.id,
             name: data.user.username,
-            email: data.user.email,
-            token: data.token,
-            blocked: data.user.blocked,
+            // blocked: data.user.blocked,
           };
         } catch (error) {
-          throw error;
+          // console.error('Authorize error:', error);
+          if (axios.isAxiosError(error)) {
+            const errorMessage = error.response?.data?.msg || "Invalid login credentials";
+            throw new Error(errorMessage);
+          }
+          
+          throw new Error("An unexpected error occurred");
         }
       },
     }),
@@ -72,7 +77,7 @@ export const authOptions: NextAuthOptions = {
 
       // Credential SignIn
       if (account?.provider === 'credentials' && user) {
-        token.accessToken = user.token;
+        // token.accessToken = user.token;
         token.userId = user.id;
         token.blocked = user.blocked;
       }
@@ -106,7 +111,7 @@ export const authOptions: NextAuthOptions = {
         session,
       });
 
-      session.accessToken = token.accessToken;
+      // session.accessToken = token.accessToken;
       session.provider = token.provider;
       session.userId = token.userId;
       session.blocked = token.blocked;
