@@ -20,7 +20,7 @@ const formSchema = z.object({
   email: z.string().email("Invalid email format"),
   password: z
     .string().min(6, { message: 'at least 6 characters long.' })
-    .max(30),
+    .max(30, { message: ''}),
 });
 
 export function SignInForm() {
@@ -62,8 +62,8 @@ export function SignInForm() {
 
     if (result?.error) {
       setErrors({ serverError: result.error });
-      console.log("Error1:", result?.error);
-      console.log("Error:", setErrors);
+      // console.log("Error1:", result?.error);
+      // console.log("Error:", setErrors);
     } else {
       router.push("/dashboard");
     }
@@ -92,6 +92,8 @@ export function SignInForm() {
                   value={data.email}
                   required
                   onChange={handleChange}
+                  className={`p-2 border rounded-md w-full ${errors.email ? "border-red-400" : "border-gray-200"
+                    }`}
                 />
                 {errors?.email && (
                   <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
@@ -109,10 +111,12 @@ export function SignInForm() {
                   required
                   value={data.password}
                   onChange={handleChange}
+                  className={`p-2 border rounded-md w-full ${errors.password ? "border-red-400" : "border-gray-200"
+                    }`}
                 />
                 {errors?.password && (
                   <div className="text-red-500 text-sm min-h-[20px]" aria-live="polite">
-                    {errors.password[0]}
+                    {errors.password}
                   </div>
                 )}
               </div>

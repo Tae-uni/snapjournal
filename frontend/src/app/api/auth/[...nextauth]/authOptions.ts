@@ -1,9 +1,8 @@
-import { axiosInstance } from '@/lib/axiosInstance';
 import axios from 'axios';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-
+import { axiosInstance } from '@/lib/axiosInstance';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -38,6 +37,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           const data = response.data
+          console.log("Response from Express:", data);
 
           // Success
           return {
@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === 'credentials' && user) {
         // token.accessToken = user.token;
         token.userId = user.id;
-        token.blocked = user.blocked;
+        // token.username = user.username;
       }
 
       // Google account
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
       // session.accessToken = token.accessToken;
       session.provider = token.provider;
       session.userId = token.userId;
-      session.blocked = token.blocked;
+      // session.blocked = token.blocked;
 
       return session;
     },

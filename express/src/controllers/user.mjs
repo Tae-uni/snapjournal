@@ -54,9 +54,12 @@ export const signIn = async (req, res) => {
     if (!isMatch) {
       throw new Error('INVALID_USER');
     }
+
     return { 
-      id: user._id,
-      username: user.username,
+      user: {
+        id: user._id.toString(),
+        username: user.username,
+      }
     };
 
   } catch (err) {
