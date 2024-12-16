@@ -1,10 +1,11 @@
 "use client"
 
 import { z } from "zod";
-import Link from "next/link"
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -61,6 +62,10 @@ export function SignInForm() {
     });
 
     if (result?.error) {
+      toast.error(result.error, {
+        position: "top-center",
+        autoClose: 6000,
+      });
       setErrors({ serverError: result.error });
       // console.log("Error1:", result?.error);
       // console.log("Error:", setErrors);
@@ -72,6 +77,7 @@ export function SignInForm() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
+      <ToastContainer />
       <div className="w-full max-w-md p-8">
         <form onSubmit={handleSubmit} method="post">
           <Card className="min-h-[450px]">
@@ -120,11 +126,11 @@ export function SignInForm() {
                   </div>
                 )}
               </div>
-              {errors.serverError && (
+              {/* {errors.serverError && (
                 <div className="text-center text-red-500 text-sm">
                   {errors.serverError}
                 </div>
-              )}
+              )} */}
             </CardContent>
             <CardFooter className="flex flex-col">
               <Button

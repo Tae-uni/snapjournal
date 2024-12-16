@@ -3,7 +3,9 @@ import { User } from "../models/User.mjs";
 
 // Instagram, Google Sign-up, Sign-in
 export const handleOAuthUser = async (req, res) => {
-  const { provider, accessToken, providerUserId, email, username } = req.body;
+  const { provider, accessToken: accessToken, providerUserId, email, username } = req.body;
+
+  console.log("HandleOAuthUser:", req.body);
 
   try {
     let user = await User.findOne({
