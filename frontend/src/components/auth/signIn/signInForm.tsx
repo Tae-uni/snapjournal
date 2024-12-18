@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
+import { FacebookSignInButton, GoogleSignInButton } from "@/components/ui/SNSbuttons";
 
 const initialState = {
   email: '',
@@ -141,12 +142,21 @@ export function SignInForm() {
               >
                 Sign In
               </Button>
-              <Button
+              {/* <Button
                 className="bg-white border border-zinc-300 rounded-md w-full text-zinc-700 hover:bg-gray-100"
                 onClick={() => signIn('google', { callbackUrl: callbackUrl })}
               >
                 <span className="text-red-600 mr-2">G</span>Sign in with Google
-              </Button>
+              </Button> */}
+              <GoogleSignInButton />
+              {/* <Button
+                className="bg-blue-500 border border-zinc-300 rounded-md w-full text-white hover:bg-blue-300"
+                onClick={() => signIn('facebook', { callbackUrl:
+                  callbackUrl})}
+              >
+                Sign in with Facebook
+              </Button> */}
+              <FacebookSignInButton />
               <Link className="underline ml-2" href="/password/request-reset">
                 Forgot password?
               </Link>
