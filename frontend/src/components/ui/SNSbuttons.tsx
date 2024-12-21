@@ -1,10 +1,11 @@
 import { signIn } from "next-auth/react";
 
-const buttonBaseClasses = "flex items-center justify-center w-full py-2 px-4 rounded-lg text-sm font-medium transition duration-300 mb-1";
+const buttonBaseClasses = "flex items-center space-between w-full py-2 px-7 rounded-lg text-sm font-medium transition duration-300 mb-1 gap-6";
 
 export function GoogleSignInButton() {
   return (
     <button
+      type="button"
       onClick={() => signIn("google")}
       className={`${buttonBaseClasses} border border-gray-300 bg-white text-gray-700 hover:bg-gray-100`}
     >
@@ -31,6 +32,7 @@ export function GoogleSignInButton() {
         />
         <path fill="none" d="M0 0h48v48H0z" />
       </svg>
+      {/* <span className="text-center">Continue with Google</span> */}
       Continue with Google
     </button>
   );
@@ -39,8 +41,9 @@ export function GoogleSignInButton() {
 export function FacebookSignInButton() {
   return (
     <button
+      type="button"
       onClick={() => signIn("facebook")}
-      className={`${buttonBaseClasses} bg-blue-600 text-white hover:bg-blue-700`}
+      className={`${buttonBaseClasses} border border-blue-600 bg-blue-600 text-white hover:bg-blue-700`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

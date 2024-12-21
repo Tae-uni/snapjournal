@@ -13,6 +13,8 @@ import { Input } from "@/components//ui/input"
 import { Button } from "@/components//ui/button"
 import { FacebookSignInButton, GoogleSignInButton } from "@/components/ui/SNSbuttons";
 
+import 'react-toastify/dist/ReactToastify.css';
+
 const initialState = {
   email: '',
   password: '',
@@ -157,7 +159,7 @@ export function SignInForm() {
                 Sign in with Facebook
               </Button> */}
               <FacebookSignInButton />
-              <Link className="underline ml-2" href="/password/request-reset">
+              <Link className="underline ml-2 text-xs mt-1.5 text-center" href="/password/request-reset">
                 Forgot password?
               </Link>
             </CardFooter>
